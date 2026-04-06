@@ -1,0 +1,207 @@
+﻿node.exe : Retrieving 
+projectΓÇª
+At C:\Users\USER\AppData\R
+oaming\npm\vercel.ps1:24 
+char:5
++     & "node$exe"  "$base
+dir/node_modules/vercel/di
+st/vc.js" $args
++     ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (R  
+  etrieving projectΓÇª:   
+ String) [], RemoteExc    
+eption
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+Deploying ultravioletadewa
+le-1537s-projects/sentinel
+-ai
+Uploading 
+[--------------------] 
+(0.0B/74.7KB)
+Uploading 
+[=====---------------] 
+(20.1KB/74.7KB)
+Uploading 
+[==============------] 
+(53.1KB/74.7KB)
+Uploading 
+[==================--] 
+(69.1KB/74.7KB)
+Uploading 
+[====================] 
+(74.7KB/74.7KB)
+Inspect: https://vercel.co
+m/ultravioletadewale-1537s
+-projects/sentinel-ai/2goG
+qRQ6ZgC9UwhKdu8E9gyqjqFG 
+[5s]
+Production: https://sentin
+el-rmks8id35-ultravioletad
+ewale-1537s-projects.verce
+l.app [5s]
+Building...
+Building...
+Building: Running build 
+in Washington, D.C., USA 
+(East) ΓÇô iad1
+Building: Build machine 
+configuration: 2 cores, 8 
+GB
+Building: Retrieving list 
+of deployment files...
+Building: Previous build 
+caches not available.
+Building: Downloading 80 
+deployment files...
+Building: Running "vercel 
+build"
+Building: Vercel CLI 
+50.38.2
+Building: Installing 
+dependencies...
+Building: added 81 
+packages in 13s
+Building: 29 packages are 
+looking for funding
+Building: run `npm fund` 
+for details
+Building: Detected 
+Next.js version: 16.2.2
+Building: Running "npm 
+run build"
+Building: > 
+four-meme@1.0.0 build
+Building: > next build
+Building: ΓÜá `eslint` 
+configuration in 
+next.config.js is no 
+longer supported. See 
+more info here: https://ne
+xtjs.org/docs/app/api-refe
+rence/cli/next#next-lint-o
+ptions
+Building: ΓÜá Invalid 
+next.config.js options 
+detected:
+Building: ΓÜá     
+Unrecognized key(s) in 
+object: 'eslint'
+Building: ΓÜá See more 
+info here: https://nextjs.
+org/docs/messages/invalid-
+next-config
+Building: Attention: 
+Next.js now collects 
+completely anonymous 
+telemetry regarding usage.
+Building: This 
+information is used to 
+shape Next.js' roadmap 
+and prioritize features.
+Building: You can learn 
+more, including how to 
+opt-out if you'd not like 
+to participate in this 
+anonymous program, by 
+visiting the following 
+URL:
+Building: https://nextjs.o
+rg/telemetry
+Building: Γû▓ Next.js 
+16.2.2 (Turbopack)
+Building: - Environments: 
+.env
+Building: Creating an 
+optimized production 
+build ...
+Building: Γ£ô Compiled 
+successfully in 9.5s
+Building: Skipping 
+validation of types
+Building: We detected 
+TypeScript in your 
+project and reconfigured 
+your tsconfig.json file 
+for you.
+Building: The following 
+mandatory changes were 
+made to your 
+tsconfig.json:
+Building: - jsx was set 
+to react-jsx (next.js 
+uses the React automatic 
+runtime)
+Building: Finished 
+TypeScript config 
+validation in 21ms ...
+Building: Collecting page 
+data using 1 worker ...
+Building: Generating 
+static pages using 1 
+worker (0/4) ...
+Building: Generating 
+static pages using 1 
+worker (1/4)
+Building: Generating 
+static pages using 1 
+worker (2/4)
+Building: Generating 
+static pages using 1 
+worker (3/4)
+Building: Γ£ô Generating 
+static pages using 1 
+worker (4/4) in 156ms
+Building: Finalizing page 
+optimization ...
+Building: Running 
+onBuildComplete from 
+Vercel
+Building: Route (app)
+Building: Γöî Γùï /
+Building: Γö£ Γùï 
+/_not-found
+Building: Γö£ ╞Æ 
+/api/audit
+Building: Γöö ╞Æ 
+/scan/[address]
+Building: Γùï  (Static)   
+prerendered as static 
+content
+Building: ╞Æ  (Dynamic)  
+server-rendered on demand
+Building: Build Completed 
+in /vercel/output [25s]
+Building: Deploying 
+outputs...
+Building: Deployment 
+completed
+Building: Creating build 
+cache...
+[2K[1A[2K[GProduction:
+ https://sentinel-rmks8id3
+5-ultravioletadewale-1537s
+-projects.vercel.app [43s]
+Completing...
+Aliased: https://sentinel-
+ai-ruddy.vercel.app [43s]
+
+Common next commands:
+- `vercel inspect sentinel
+-rmks8id35-ultravioletadew
+ale-1537s-projects.vercel.
+app --logs`
+- `vercel redeploy sentine
+l-rmks8id35-ultravioletade
+wale-1537s-projects.vercel
+.app`
+> Tip: Run `npx plugins 
+add vercel/vercel-plugin` 
+to enhance your agent 
+experience
+https://sentinel-rmks8id35-ultravioletadewale-1537s-projects.vercel.app

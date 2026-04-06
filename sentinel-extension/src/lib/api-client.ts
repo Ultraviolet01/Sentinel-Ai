@@ -7,7 +7,7 @@ import { SentinelError, SentinelErrorCode } from './errors';
  */
 class SentinelApiClient {
   private static instance: SentinelApiClient;
-  private readonly baseUrl: string = "http://localhost:3000/api/audit";
+  private readonly baseUrl: string = "https://sentinel-ai-ruddy.vercel.app/api/audit";
   private readonly timeout: number = 20000; // 20s Operative Guard
 
   private constructor() {}
@@ -63,7 +63,7 @@ class SentinelApiClient {
         spokenSummary: auditData.result.summary || "Awaiting diagnosis...",
         redFlags: auditData.result.topRedFlags || [],
         positives: auditData.result.topPositiveSignals || [],
-        fullReportUrl: `http://localhost:3000/scan/${auditData.metadata.address}`,
+        fullReportUrl: `https://sentinel-ai-ruddy.vercel.app/scan/${auditData.metadata.address}`,
         audioBase64: auditData.audioBase64
       };
     } catch (err: any) {

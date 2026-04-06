@@ -1,73 +1,56 @@
-# React + TypeScript + Vite
+# Sentinel AI: Integrated Intelligence Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The **Sentinel AI** ecosystem is a premium, real-time security and auditing suite for the crypto ecosystem. It combines a high-fidelity intelligence dashboard with a platform-aware browser extension to provide immediate risk assessments for tokens on Four.Meme, DexScreener, X, and Telegram.
 
-Currently, two official plugins are available:
+## 🌐 Sentinel AI Dashboard (Web App)
+The central intelligence hub for deep-scrutiny audits, risk scoring, and voice-assisted diagnostic reports.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Live URL**: [https://sentinel-ai-ruddy.vercel.app](https://sentinel-ai-ruddy.vercel.app)
+- **Tech Stack**: Next.js 15+, React 19, Tailwind CSS, Framer Motion, Google Gemini AI.
 
-## React Compiler
+### 🛠️ Web App Setup
+1. **Clone the repository**: `git clone https://github.com/Ultraviolet01/Sentinel-Ai.git`
+2. **Install dependencies**: `npm install`
+3. **Configure Environment Variables**: Create a `.env` file with:
+   ```env
+   GEMINI_API_KEY=your_key_here
+   ELEVENLABS_API_KEY=your_key_here
+   NEXT_PUBLIC_BSC_RPC=https://bsc-dataseed.binance.org
+   ```
+4. **Run development server**: `npm run dev`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🧩 FourScan Browser Extension
+A Manifest V3 tool that brings Sentinel AI's operative intelligence directly to your trading floor.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🚀 Installation (Developer Mode)
+1. Navigate to the `sentinel-extension/` directory.
+2. Run `npm install && npm run build` to generate the production `dist/` folder.
+3. Open **Chrome** and go to `chrome://extensions/`.
+4. Enable **"Developer mode"** (top right).
+5. Click **"Load unpacked"** and select the `/sentinel-extension` folder.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 🛠️ Key Commands
+- **Manual Scan**: Click the extension icon on any token page.
+- **Terminal Shortcut**: `Ctrl + Shift + S` (Windows) or `Command + Shift + S` (Mac).
+- **Voice Mode**: Click the Microphone in the popup to enable real-time auditory verdicts.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🏗️ Project Structure
+```text
+.
+├── sentinel-extension/    # Manifest V3 Chrome Extension (React + Vite)
+├── src/                   # Next.js Dashboard Source
+├── public/                # Static Assets
+└── package.json           # Root Project Configuration
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🍱 Verification Checklist
+- [x] Production build successful (Next.js 16.2.2).
+- [x] Environment variables synchronized on Vercel.
+- [x] Extension packaged with clean `dist/` artifacts.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+**Build 1.0.0 // Operative Status: LIVE & SECURED**

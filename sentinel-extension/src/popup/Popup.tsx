@@ -3,7 +3,6 @@ import {
   ShieldCheck, 
   ShieldAlert, 
   Zap, 
-  Mic, 
   ExternalLink, 
   Cpu,
   RefreshCw,
@@ -19,7 +18,6 @@ const Popup = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<SentinelError | null>(null);
-  const [isVoiceActive, setIsVoiceActive] = useState(false);
 
   const startScan = async () => {
     setLoading(true);
@@ -49,7 +47,7 @@ const Popup = () => {
       const analysisResponse = await chrome.runtime.sendMessage({ 
         action: "ANALYZE_TOKEN", 
         extraction,
-        scanMode: isVoiceActive ? "voice" : "manual"
+        scanMode: "manual"
       });
 
       if (analysisResponse.success) {
@@ -68,7 +66,7 @@ const Popup = () => {
   };
 
   const handleHeaderClick = () => {
-    chrome.tabs.create({ url: 'http://localhost:3000' });
+    chrome.tabs.create({ url: 'https://sentinel-ai-ruddy.vercel.app' });
   };
 
   return (
@@ -85,23 +83,9 @@ const Popup = () => {
             <h1 className="text-2xl font-black font-orbitron tracking-tighter text-white group-hover:text-neon-purple transition-colors">FourScan</h1>
             <div className="w-1.5 h-1.5 bg-cyber-green rounded-full animate-pulse shadow-[0_0_8px_rgba(5,255,161,0.5)]" />
           </div>
-          <p className="text-[10px] uppercase font-black tracking-widest text-gray-500 group-hover:text-gray-300 transition-colors">Sentinel AI Platform <ExternalLink size={8} className="inline ml-1 opacity-0 group-hover:opacity-100 transition-opacity" /></p>
+          <p className="text-[10px] uppercase font-black tracking-widest text-gray-500 group-hover:text-gray-300 transition-colors">Sentient Background Listening Active <ExternalLink size={8} className="inline ml-1 opacity-0 group-hover:opacity-100 transition-opacity" /></p>
         </div>
         <div className="flex gap-2">
-          <button 
-            onClick={() => setIsVoiceActive(!isVoiceActive)}
-            className={`p-2 rounded border transition-all relative overflow-hidden ${isVoiceActive ? 'border-neon-purple bg-neon-purple/20 text-neon-purple shadow-[0_0_15px_rgba(188,19,254,0.3)]' : 'border-white/10 text-gray-500'}`}
-          >
-            {isVoiceActive && (
-              <motion.div 
-                layoutId="mic-pulse"
-                className="absolute inset-0 bg-neon-purple/20"
-                animate={{ opacity: [0.2, 0.5, 0.2] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            )}
-            <Mic size={16} className="relative z-10" />
-          </button>
           <button 
             onClick={startScan}
             disabled={loading}
