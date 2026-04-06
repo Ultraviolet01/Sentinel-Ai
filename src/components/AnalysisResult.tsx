@@ -27,32 +27,28 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
 
   const getVerdictTheme = (verdict: string) => {
     switch (verdict) {
-      case 'Promising': 
-      case 'Safe': 
+      case 'SAFE': 
         return {
           border: 'border-cyber-green',
           bg: 'bg-cyber-green/10',
           text: 'text-cyber-green',
-          glow: 'drop-shadow-[0_0_25px_rgba(0,255,163,0.8)]', // Massive Green Glow
+          glow: 'drop-shadow-[0_0_25px_rgba(0,255,163,0.8)]',
           hex: '#00ffa3'
         };
-      case 'High Risk': 
-      case 'Avoid': 
-      case 'Danger': 
+      case 'DANGER': 
         return {
           border: 'border-cyber-red',
           bg: 'bg-cyber-red/10',
           text: 'text-cyber-red',
-          glow: 'drop-shadow-[0_0_25px_rgba(255,77,77,0.8)]', // Massive Red Glow
+          glow: 'drop-shadow-[0_0_25px_rgba(255,77,77,0.8)]',
           hex: '#ff4d4d'
         };
-      case 'Watch': 
-      case 'Medium Risk': 
+      case 'MID': 
         return {
           border: 'border-cyber-orange',
           bg: 'bg-cyber-orange/10',
           text: 'text-cyber-orange',
-          glow: 'drop-shadow-[0_0_25px_rgba(255,183,0,0.6)]', // Intense Orange Glow
+          glow: 'drop-shadow-[0_0_25px_rgba(255,183,0,0.6)]',
           hex: '#ffb700'
         };
       default: return {
@@ -127,16 +123,16 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
         
         {/* Main Verdict & Summary */}
         <div className="lg:col-span-8 space-y-6">
-           <div className="glass-card p-8 border-l-4 border-cyber-green bg-[#00ffa3]/[0.02]">
+           <div className={`glass-card p-8 border-l-4 ${theme.border} ${theme.bg}`}>
               <div className="flex flex-col gap-2">
                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-cyber-green animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyber-green/60">Risk Assessment Analysis</span>
+                    <div className={`w-1.5 h-1.5 rounded-full ${theme.text.replace('text-', 'bg-')} animate-pulse`} />
+                    <span className={`text-[10px] font-black uppercase tracking-[0.4em] ${theme.text} opacity-60`}>Risk Assessment Analysis</span>
                  </div>
                  <h1 className={`text-6xl md:text-8xl font-black font-orbitron tracking-tighter uppercase italic leading-none ${theme.text} ${theme.glow} transition-all duration-700`}>
                     {result.finalVerdict}
                  </h1>
-                 <p className="text-gray-300 font-mono text-sm md:text-base leading-relaxed mt-6 border-l-2 border-cyber-green/30 pl-6 italic">
+                 <p className="text-gray-300 font-mono text-sm md:text-base leading-relaxed mt-6 border-l-2 border-white/10 pl-6 italic">
                     "{result.summary}"
                  </p>
                  <div className="mt-8 pt-4 border-t border-white/5 flex items-center gap-4">
@@ -144,7 +140,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
                       Confidence: <span className="text-white">{result.confidenceLevel}%</span>
                     </div>
                     <div className="px-3 py-1 bg-white/5 rounded border border-white/10 text-[9px] font-black uppercase tracking-widest text-gray-500">
-                      Trace_ID: <span className="text-white">HST-{(result.scores.risk || 0).toString().padStart(3, '0')}</span>
+                      Trace_ID: <span className="text-white">HST-{(result.scores?.risk || 0).toString().padStart(3, '0')}</span>
                     </div>
                  </div>
               </div>
@@ -161,13 +157,13 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
                   stroke={theme.hex} strokeWidth="8" strokeLinecap="square"
                   fill="transparent" strokeDasharray="502.6"
                   initial={{ strokeDashoffset: 502.6 }}
-                  animate={{ strokeDashoffset: 502.6 - (502.6 * (result.scores.risk || 0)) / 100 }}
+                  animate={{ strokeDashoffset: 502.6 - (502.6 * (result.scores?.risk || 0)) / 100 }}
                   transition={{ duration: 2, ease: "circOut" }}
-                  className="drop-shadow-[0_0_15px_rgba(0,255,163,0.3)]"
+                  style={{ filter: `drop-shadow(0 0 10px ${theme.hex})` }}
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                 <span className={`text-7xl font-black font-orbitron tracking-tighter ${theme.text}`}>{result.scores.risk}</span>
+                 <span className={`text-7xl font-black font-orbitron tracking-tighter ${theme.text}`}>{result.scores?.risk || 0}</span>
                  <span className="text-[10px] uppercase font-black tracking-[0.3em] opacity-30 mt-[-5px]">Risk Score</span>
               </div>
            </div>
@@ -188,10 +184,10 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
                </div>
             </div>
             <div className="space-y-3 flex-grow">
-               {result.topRedFlags.length > 0 ? result.topRedFlags.map((flag, i) => (
+               {result.topRedFlags?.length > 0 ? result.topRedFlags.map((flag, i) => (
                  <div key={i} className="p-4 bg-cyber-red/[0.03] border border-cyber-red/10 rounded-md flex items-start gap-3 group hover:border-cyber-red/30 transition-colors">
                     <ShieldAlert size={12} className="text-cyber-red/60 mt-1 flex-shrink-0" />
-                    <p className="text-[11px] font-bold text-gray-300 uppercase leading-tight tracking-tight">{flag}</p>
+                    <p className="text-[11px] font-bold text-cyber-red uppercase leading-tight tracking-tight">{flag}</p>
                  </div>
                )) : (
                  <div className="p-4 border border-white/5 rounded-md text-[10px] font-mono text-gray-600 text-center italic">No threats localized.</div>
@@ -211,10 +207,10 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
                </div>
             </div>
             <div className="space-y-3 flex-grow">
-               {result.topPositiveSignals.length > 0 ? result.topPositiveSignals.map((sig, i) => (
+               {result.topPositiveSignals?.length > 0 ? result.topPositiveSignals.map((sig, i) => (
                  <div key={i} className="p-4 bg-cyber-green/[0.03] border border-cyber-green/10 rounded-md flex items-start gap-3 group hover:border-cyber-green/30 transition-colors">
                     <ShieldCheck size={12} className="text-cyber-green/60 mt-1 flex-shrink-0" />
-                    <p className="text-[11px] font-bold text-gray-300 uppercase leading-tight tracking-tight">{sig}</p>
+                    <p className="text-[11px] font-bold text-cyber-green uppercase leading-tight tracking-tight">{sig}</p>
                  </div>
                )) : (
                  <div className="p-4 border border-white/5 rounded-md text-[10px] font-mono text-gray-600 text-center italic">No trust signals confirmed.</div>
@@ -234,10 +230,10 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
                </div>
             </div>
             <div className="space-y-3 flex-grow">
-               {result.penalties.length > 0 ? result.penalties.map((p, i) => (
+               {result.penalties?.length > 0 ? result.penalties.map((p, i) => (
                  <div key={i} className="p-4 bg-cyber-orange/[0.03] border border-cyber-orange/10 rounded-md flex items-start gap-3 group hover:border-cyber-orange/30 transition-colors">
                     <div className="w-1.5 h-1.5 rounded-full bg-cyber-orange/60 mt-2 flex-shrink-0" />
-                    <p className="text-[11px] font-bold text-gray-300 uppercase leading-tight tracking-tight">{p.label}</p>
+                    <p className="text-[11px] font-bold text-cyber-orange uppercase leading-tight tracking-tight">{p.label}</p>
                  </div>
                )) : (
                  <div className="p-4 border border-white/5 rounded-md text-[10px] font-mono text-gray-600 text-center italic">Full data sync achieved.</div>

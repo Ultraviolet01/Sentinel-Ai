@@ -30,7 +30,7 @@ export interface ScorecardResult {
   penalties: Array<{ label: string; points: number; description: string }>;
   topPositiveSignals: string[];
   topRedFlags: string[];
-  finalVerdict: 'Watch' | 'Promising' | 'High Risk' | 'Avoid';
+  finalVerdict: 'SAFE' | 'MID' | 'DANGER';
   verdict: string;
   bullCase: string;
   bearCase: string;
@@ -68,75 +68,69 @@ export async function analyzeToken(data: any, history: any[] = []) {
     - Price: ${data.priceUsd}
     - Liquidity: ${data.liquidityUsd}
     - FDV: ${data.fdv}
-    - Created: ${data.pairCreatedAt ? new Date(data.pairCreatedAt).toISOString() : 'Unknown'}
-    - FRESH LAUNCH DETECTED: ${isFresh}
-    - ECOSYSTEM: Four.Meme Official Launch: ${data.isFourMemeLaunch}
-    - Buy/Sell Ratio: ${data.txStats?.buys}/${data.txStats?.sells}
     - Top 5 Concentration: ${data.holderConcentration}%
     - Wallet Cluster Detected: ${data.clusterDetected}
-    - Social Links: ${data.socialLinks?.join(", ")}
 
-    Role: You are Sentinel AI, the professional 100-point crypto auditor specialized in the Four.Meme ecosystem. Grade the token and provide specialized agent reports.
+    Role: You are Sentinel AI, a high-precision crypto auditor.
     
     Audit Integrity Rules:
-    1. Judge your ANALYSIS CONFIDENCE (0-100%). Lower it if: social links are missing, liquidity is <1% of FDV, or volume is near zero.
-    2. Reference RAW SIGNALS (Price, Liq, Hold%) in your reasoning.
-    3. TIMESTAMP this audit as: ${new Date().toISOString()}
-
-    100-Point Rubric & Ecosystem Rules:
-    [Standard Rubric: Narrative 20, Momentum 20, Liquidity 20, Holders 15, Safety 15, Meme Launch Quality 10]
-    [Deductions: Whale Concentration -15, Cluster -10, Social Ghosting -10, Copied Branding -10]
+    1. Grade the token's OVERALL RISK (0-100%). High score = high risk.
+    2. Provide a FINAL VERDICT from this exact list: [SAFE, MID, DANGER].
+    3. Low risk/Safe = SAFE. Medium risk = MID. High risk/Danger = DANGER.
 
     Response Format (JSON ONLY):
     {
-      "summary": "2-line summary...",
+      "summary": "...",
       "durabilityScore": 85,
-      "isFreshLaunch": ${isFresh},
-      "confidenceLevel": 95, 
-      "timestamp": "${new Date().toISOString()}",
-      "scores": { ... },
-      "breakdown": { ... },
-      "penalties": [ ... ],
-      "topPositiveSignals": [ ... ],
-      "topRedFlags": [ ... ],
-      "finalVerdict": "...",
-      "verdict": "...",
-      "bullCase": "...",
-      "bearCase": "...",
-      "reasoning": "...",
-      "agents": { ... },
-      "analysis": { ... }
+      "scores": {
+        "risk": 15,
+        "narrative": 20,
+        "momentum": 15,
+        "liquidity": 20,
+        "holders": 15,
+        "safety": 15,
+        "launchQuality": 0
+      },
+      "finalVerdict": "SAFE",
+      ...
     }
   `;
 
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const text = response.text();
+    let text = response.text();
     
-    // Robust JSON cleaning
-    let cleanedText = text
-      .trim()
-      .replace(/^```json/, "")
-      .replace(/```$/, "")
-      .trim();
-
-    // Sometimes the AI might add text after the JSON
-    const firstBrace = cleanedText.indexOf('{');
-    const lastBrace = cleanedText.lastIndexOf('}');
-    if (firstBrace !== -1 && lastBrace !== -1) {
-      cleanedText = cleanedText.substring(firstBrace, lastBrace + 1);
-    }
-
+    // Clean JSON
+    let cleanedText = text.trim().replace(/^```json/, "").replace(/```$/, "").trim();
     const parsed = JSON.parse(cleanedText);
 
-    // Normalize response to prevent UI TypeErrors (Defensive Layer)
+    // Score Normalization (Fix for missing gauge score)
+    if (!parsed.scores) parsed.scores = { risk: 50 };
+    if (parsed.scores.risk === undefined) {
+      // Sum the breakdown if total risk is missing
+      const b = parsed.breakdown || {};
+      parsed.scores.risk = Math.max(0, Math.min(100, (b.safety || 0) + (b.liquidity || 0)));
+    }
+
+    // Verdict Normalization (Fix for label sync)
+    const v = (parsed.finalVerdict || '').toUpperCase();
+    if (v.includes('SAFE')) parsed.finalVerdict = 'SAFE';
+    else if (v.includes('DANGER') || v.includes('HIGH')) parsed.finalVerdict = 'DANGER';
+    else parsed.finalVerdict = 'MID';
+
+    // Normalize agents
     if (!parsed.agents) parsed.agents = {};
     if (!parsed.agents.watch) parsed.agents.watch = { status: 'Normal', report: 'Stability maintained.', stability: 80 };
-    if (!parsed.agents.narrative) parsed.agents.narrative = { trend: 'Stagnant', report: 'Analyzing trend velocity...', first24hIntel: '' };
+    if (!parsed.agents.narrative) parsed.agents.narrative = { trend: 'Stagnant', report: 'Analyzing trend velocity...' };
     if (!parsed.agents.alert) parsed.agents.alert = { severity: 'Normal', signal: 'No critical anomalies.' };
 
     return parsed;
+  } catch (error) {
+    console.error("AI Analysis failed:", error);
+    throw new Error("Failed to generate AI scorecard.");
+  }
+}
   } catch (error) {
     console.error("AI Analysis failed:", error);
     // Fallback or re-throw
