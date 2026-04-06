@@ -7,10 +7,15 @@ import { generateSpokenVerdict } from '@/lib/elevenlabs';
 
 export async function POST(request: Request) {
   try {
-    const { addressQuery } = await request.json();
+    const body = await request.json();
+    const addressQuery = body.addressQuery || body.contractAddress;
+    
+    console.log(`[Sentinel_Audit] Incoming Trace: ${addressQuery} (Mode: ${body.scanMode || 'manual'})`);
+    
     const address = sanitizeAddress(addressQuery);
 
     if (!address || address.length < 40) {
+      console.warn(`[Sentinel_Audit] Validation Failed: ${addressQuery}`);
       return NextResponse.json({ success: false, error: "Invalid address or Four.Meme URL." }, { status: 400 });
     }
 

@@ -44,13 +44,23 @@ const FOUR_MEME_FACTORY = '0x5c952063c7fc8610ffdb798152d69f0b9550762b';
 
 export async function fetchTokenData(address: string): Promise<TokenMetadata> {
   try {
+    if (!address.startsWith('0x')) {
+      throw new Error("Invalid hexadecimal address format.");
+    }
+
     // 1. Fetch Basic On-Chain Data
-    const [name, symbol, decimals, totalSupply] = await Promise.all([
-      publicClient.readContract({ address: address as `0x${string}`, abi: ERC20_ABI, functionName: 'name' }),
-      publicClient.readContract({ address: address as `0x${string}`, abi: ERC20_ABI, functionName: 'symbol' }),
-      publicClient.readContract({ address: address as `0x${string}`, abi: ERC20_ABI, functionName: 'decimals' }),
-      publicClient.readContract({ address: address as `0x${string}`, abi: ERC20_ABI, functionName: 'totalSupply' }),
-    ]);
+    let name, symbol, decimals, totalSupply;
+    try {
+      [name, symbol, decimals, totalSupply] = await Promise.all([
+        publicClient.readContract({ address: address as `0x${string}`, abi: ERC20_ABI, functionName: 'name' }),
+        publicClient.readContract({ address: address as `0x${string}`, abi: ERC20_ABI, functionName: 'symbol' }),
+        publicClient.readContract({ address: address as `0x${string}`, abi: ERC20_ABI, functionName: 'decimals' }),
+        publicClient.readContract({ address: address as `0x${string}`, abi: ERC20_ABI, functionName: 'totalSupply' }),
+      ]);
+    } catch (e: any) {
+      console.warn(`[Sentinel_Fetch] On-chain lookup failed for ${address}:`, e.message);
+      throw new Error(`Token not found or incompatible with ERC-20 standard: ${e.message}`);
+    }
 
     // 2. Detect Launch Source (Four.Meme)
     let isFourMemeLaunch = false;
