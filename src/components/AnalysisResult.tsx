@@ -173,14 +173,14 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
       {/* SECTION 3: SIGNAL TRIO (THREAT, TRUST, MISSING) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
          {/* THREAT SIGNALS */}
-         <div className="glass-card p-6 border-t-2 border-cyber-red bg-[#ff4d4d]/[0.02] flex flex-col">
+         <div className="glass-card p-6 border-t-2 border-cyber-red bg-[#ff4d4d]/[0.02] flex flex-col shadow-[0_4px_20px_rgba(255,77,77,0.05)]">
             <div className="flex items-center gap-3 mb-6">
                <div className="p-2 bg-cyber-red/10 rounded border border-cyber-red/20 shadow-[0_0_10px_rgba(255,77,77,0.2)]">
                   <ShieldAlert size={16} className="text-cyber-red" />
                </div>
                <div>
                   <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-cyber-red leading-none">Threat</h3>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-cyber-red/50">Signals</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-cyber-red">Signals</span>
                </div>
             </div>
             <div className="space-y-3 flex-grow">
@@ -190,20 +190,22 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
                     <p className="text-[11px] font-bold text-cyber-red uppercase leading-tight tracking-tight">{flag}</p>
                  </div>
                )) : (
-                 <div className="p-4 border border-white/5 rounded-md text-[10px] font-mono text-gray-600 text-center italic">No threats localized.</div>
+                 <div className="p-4 border border-cyber-red/10 rounded-md text-[10px] font-mono text-cyber-red/60 text-center italic bg-cyber-red/[0.02]">
+                    No threats localized.
+                 </div>
                )}
             </div>
          </div>
 
          {/* TRUST SIGNALS */}
-         <div className="glass-card p-6 border-t-2 border-cyber-green bg-[#00ffa3]/[0.02] flex flex-col">
+         <div className="glass-card p-6 border-t-2 border-cyber-green bg-[#00ffa3]/[0.02] flex flex-col shadow-[0_4px_20px_rgba(0,255,163,0.05)]">
             <div className="flex items-center gap-3 mb-6">
                <div className="p-2 bg-cyber-green/10 rounded border border-cyber-green/20 shadow-[0_0_10px_rgba(0,255,163,0.2)]">
                   <ShieldCheck size={16} className="text-cyber-green" />
                </div>
                <div>
                   <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-cyber-green leading-none">Trust</h3>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-cyber-green/50">Signals</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-cyber-green">Signals</span>
                </div>
             </div>
             <div className="space-y-3 flex-grow">
@@ -213,20 +215,22 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
                     <p className="text-[11px] font-bold text-cyber-green uppercase leading-tight tracking-tight">{sig}</p>
                  </div>
                )) : (
-                 <div className="p-4 border border-white/5 rounded-md text-[10px] font-mono text-gray-600 text-center italic">No trust signals confirmed.</div>
+                 <div className="p-4 border border-cyber-green/10 rounded-md text-[10px] font-mono text-cyber-green/60 text-center italic bg-cyber-green/[0.02]">
+                    No trust signals confirmed.
+                 </div>
                )}
             </div>
          </div>
 
          {/* MISSING SIGNALS (derived from rubric or generic if missing) */}
-         <div className="glass-card p-6 border-t-2 border-cyber-orange bg-[#ffb700]/[0.02] flex flex-col">
+         <div className="glass-card p-6 border-t-2 border-cyber-orange bg-[#ffb700]/[0.02] flex flex-col shadow-[0_4px_20px_rgba(255,183,0,0.05)]">
             <div className="flex items-center gap-3 mb-6">
                <div className="p-2 bg-cyber-orange/10 rounded border border-cyber-orange/20 shadow-[0_0_10px_rgba(255,183,0,0.2)]">
                   <Cpu size={16} className="text-cyber-orange" />
                </div>
                <div>
                   <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-cyber-orange leading-none">Missing</h3>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-cyber-orange/50">Signals</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-cyber-orange">Signals</span>
                </div>
             </div>
             <div className="space-y-3 flex-grow">
@@ -236,7 +240,9 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
                     <p className="text-[11px] font-bold text-cyber-orange uppercase leading-tight tracking-tight">{p.label}</p>
                  </div>
                )) : (
-                 <div className="p-4 border border-white/5 rounded-md text-[10px] font-mono text-gray-600 text-center italic">Full data sync achieved.</div>
+                 <div className="p-4 border border-cyber-orange/10 rounded-md text-[10px] font-mono text-cyber-orange/60 text-center italic bg-cyber-orange/[0.02]">
+                    Full data sync achieved.
+                 </div>
                )}
             </div>
          </div>
