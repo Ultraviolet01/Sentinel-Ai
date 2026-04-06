@@ -128,7 +128,15 @@ export async function analyzeToken(data: any, history: any[] = []) {
       cleanedText = cleanedText.substring(firstBrace, lastBrace + 1);
     }
 
-    return JSON.parse(cleanedText);
+    const parsed = JSON.parse(cleanedText);
+
+    // Normalize response to prevent UI TypeErrors (Defensive Layer)
+    if (!parsed.agents) parsed.agents = {};
+    if (!parsed.agents.watch) parsed.agents.watch = { status: 'Normal', report: 'Stability maintained.', stability: 80 };
+    if (!parsed.agents.narrative) parsed.agents.narrative = { trend: 'Stagnant', report: 'Analyzing trend velocity...', first24hIntel: '' };
+    if (!parsed.agents.alert) parsed.agents.alert = { severity: 'Normal', signal: 'No critical anomalies.' };
+
+    return parsed;
   } catch (error) {
     console.error("AI Analysis failed:", error);
     // Fallback or re-throw

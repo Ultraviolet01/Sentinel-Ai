@@ -10,6 +10,11 @@ interface SentinelAgentsProps {
 }
 
 export const SentinelAgents: React.FC<SentinelAgentsProps> = ({ agents }) => {
+  // Safe fallbacks to prevent rendering crashes
+  const watch = agents?.watch || { status: 'Offline', report: 'Sentinel watch currently recalibrating...', stability: 0 };
+  const narrative = agents?.narrative || { trend: 'Stagnant', report: 'Narrative trend gathering data...', first24hIntel: '' };
+  const alert = agents?.alert || { severity: 'Normal', signal: 'No critical anomalies detected.' };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       {/* WATCH AGENT */}
@@ -28,18 +33,18 @@ export const SentinelAgents: React.FC<SentinelAgentsProps> = ({ agents }) => {
         
         <div className="space-y-3">
            <div className="flex justify-between items-end">
-              <span className="text-2xl font-black font-orbitron text-white">{agents.watch.stability}%</span>
+              <span className="text-2xl font-black font-orbitron text-white">{watch.stability}%</span>
               <span className="text-[8px] font-bold uppercase tracking-widest text-gray-500 pb-1">Stability Rate</span>
            </div>
            <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
               <motion.div 
                 initial={{ width: 0 }}
-                animate={{ width: `${agents.watch.stability}%` }}
+                animate={{ width: `${watch.stability}%` }}
                 className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
               />
            </div>
            <p className="text-[11px] text-gray-400 leading-relaxed italic">
-             "{agents.watch.report}"
+             "{watch.report}"
            </p>
         </div>
       </motion.div>
@@ -62,19 +67,19 @@ export const SentinelAgents: React.FC<SentinelAgentsProps> = ({ agents }) => {
         <div className="space-y-3">
            <div className="flex justify-between items-center">
               <span className={`text-xs font-black uppercase tracking-[0.2em] px-3 py-1 rounded bg-white/5 border ${
-                agents.narrative.trend === 'Rising' ? 'text-cyber-green border-cyber-green/30' : 
-                agents.narrative.trend === 'Dying' ? 'text-red-500 border-red-500/30' : 'text-gray-400 border-white/10'
+                narrative.trend === 'Rising' ? 'text-cyber-green border-cyber-green/30' : 
+                narrative.trend === 'Dying' ? 'text-red-500 border-red-500/30' : 'text-gray-400 border-white/10'
               }`}>
-                {agents.narrative.trend}
+                {narrative.trend}
               </span>
               <span className="text-[8px] font-bold uppercase tracking-widest text-gray-500">Vibe Velocity</span>
            </div>
            <p className="text-[11px] text-gray-400 leading-relaxed italic mb-3">
-             "{agents.narrative.report}"
+             "{narrative.report}"
            </p>
-           {agents.narrative.first24hIntel && (
+           {narrative.first24hIntel && (
              <div className="p-2 bg-cyan-500/5 border border-cyan-500/20 rounded text-[10px] text-cyan-400 font-mono">
-                <span className="text-cyan-500 font-bold">[24H_INTEL]:</span> {agents.narrative.first24hIntel}
+                <span className="text-cyan-500 font-bold">[24H_INTEL]:</span> {narrative.first24hIntel}
              </div>
            )}
         </div>
@@ -98,18 +103,18 @@ export const SentinelAgents: React.FC<SentinelAgentsProps> = ({ agents }) => {
         <div className="space-y-3">
            <div className="flex justify-between items-center">
               <span className={`text-xs font-black uppercase tracking-[0.2em] flex items-center gap-2 ${
-                agents.alert.severity === 'Critical' ? 'text-red-500' : 
-                agents.alert.severity === 'Warning' ? 'text-orange-500' : 'text-gray-400'
+                alert.severity === 'Critical' ? 'text-red-500' : 
+                alert.severity === 'Warning' ? 'text-orange-500' : 'text-gray-400'
               }`}>
                 <div className={`w-2 h-2 rounded-full animate-pulse ${
-                  agents.alert.severity === 'Critical' ? 'bg-red-500' : 
-                  agents.alert.severity === 'Warning' ? 'bg-orange-500' : 'bg-gray-500'
+                  alert.severity === 'Critical' ? 'bg-red-500' : 
+                  alert.severity === 'Warning' ? 'bg-orange-500' : 'bg-gray-500'
                 }`} />
-                {agents.alert.severity}
+                {alert.severity}
               </span>
            </div>
            <p className="text-[11px] text-gray-400 leading-relaxed font-mono">
-             {agents.alert.signal}
+             {alert.signal}
            </p>
         </div>
       </motion.div>
