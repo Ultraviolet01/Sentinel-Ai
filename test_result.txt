@@ -1,0 +1,33 @@
+﻿node : FAILURE: 
+[GoogleGenerativeAI 
+Error]: Error fetching 
+from https://generativelan
+guage.googleapis.com/v1bet
+a/models/gemini-1.5-flash:
+generateContent: [404 Not 
+Found] 
+models/gemini-1.5-flash 
+is not found for API 
+version v1beta, or is not 
+supported for 
+generateContent. Call 
+ListModels to see the 
+list of available models 
+and their supported 
+methods.
+At line:1 char:1
++ node test_gemini.js "AIz
+aSyBF_4259MP176GP6Dd4e14Tc
+8Hy_Hbjo5E" 2>&1 |  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (F  
+  AILURE: [Googl...port   
+ ed methods.:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 

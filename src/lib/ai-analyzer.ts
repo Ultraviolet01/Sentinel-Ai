@@ -51,7 +51,7 @@ export interface ScorecardResult {
 }
 
 export async function analyzeToken(data: any, history: any[] = []) {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
   const isFresh = data.pairCreatedAt ? (Date.now() - data.pairCreatedAt) < 86400000 : false;
 
