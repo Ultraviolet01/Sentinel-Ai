@@ -131,9 +131,3 @@ export async function analyzeToken(data: any, history: any[] = []) {
     throw new Error("Failed to generate AI scorecard.");
   }
 }
-  } catch (error) {
-    console.error("AI Analysis failed:", error);
-    // Fallback or re-throw
-    throw new Error("Failed to generate AI scorecard. Please check your API key or try again later.");
-  }
-}
