@@ -77,7 +77,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
              <h2 className="text-3xl font-black font-orbitron tracking-tighter text-white">
               {metadata.name}
             </h2>
-            <span className="text-neon-purple font-mono font-bold text-sm bg-neon-purple/10 px-2 py-0.5 rounded border border-neon-purple/20">
+            <span className="text-[var(--cta-color)] font-mono font-bold text-sm bg-[var(--cta-color)]/10 px-2 py-0.5 rounded border border-[var(--cta-color)]/20">
               ${metadata.symbol}
             </span>
             {result.isFreshLaunch && (
@@ -108,7 +108,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
                   key={i} 
                   href={link} 
                   target="_blank" 
-                  className="p-1.5 bg-white/5 border border-white/10 rounded hover:bg-neon-purple/20 hover:border-neon-purple/50 transition-all text-gray-400 hover:text-white"
+                  className="p-1.5 bg-white/5 border border-white/10 rounded hover:bg-[var(--cta-color)]/20 hover:border-[var(--cta-color)]/50 transition-all text-gray-400 hover:text-white"
                 >
                   {link.includes('x.com') || link.includes('twitter') ? <Zap size={14} /> : 
                    link.includes('t.me') ? <MessageSquare size={14} /> : <Globe size={14} />}
@@ -327,7 +327,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
       <div className="flex justify-center pt-8">
           <button 
             onClick={onOpenDetails}
-            className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-600 hover:text-white transition-all py-8"
+            className="cta-button"
           >
             [Initiate_Alpha_Deep-Dive]
           </button>

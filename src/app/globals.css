@@ -8,21 +8,56 @@
   --cyber-green: #00ffa3;
   --cyber-red: #ff4d4d;
   --cyber-orange: #ffb700;
+  --cta-color: #00f8bb;
 }
 
 body {
-  background-color: var(--background);
+  background-image: url('/matrix-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--foreground);
   font-family: var(--font-orbitron), var(--font-inter), sans-serif;
+  min-height: 100vh;
 }
 
 h1, h2, h3, h4, .font-orbitron {
   font-family: var(--font-orbitron);
 }
 
+/* Primary Matrix CTA Buttons */
+.cta-button {
+  background-color: var(--cta-color);
+  color: #000000 !important;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.8rem 1.8rem;
+  border-radius: 6px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 15px rgba(0, 248, 187, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+}
+
+.cta-button:hover {
+  background-color: #00e0a8;
+  box-shadow: 0 0 25px rgba(0, 248, 187, 0.7);
+  transform: translateY(-2px);
+}
+
+.cta-button:active {
+  transform: translateY(0px);
+}
+
 /* Sentinel Terminal Glass Effects */
 .glass-card {
-  @apply bg-white/[0.03] border border-white/10 backdrop-blur-md rounded-xl relative overflow-hidden;
+  @apply bg-black/60 border border-white/10 backdrop-blur-md rounded-xl relative overflow-hidden;
 }
 
 /* Mobile-First Scanline Overlay */
@@ -30,7 +65,7 @@ h1, h2, h3, h4, .font-orbitron {
   width: 100%;
   height: 100px;
   z-index: 10;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(168, 85, 247, 0.05) 50%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(0, 248, 187, 0.05) 50%, rgba(0, 0, 0, 0) 100%);
   opacity: 0.1;
   position: absolute;
   bottom: 100%;

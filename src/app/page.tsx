@@ -28,9 +28,9 @@ export default function Home() {
       <div className="absolute top-8 right-8 z-50">
         <button 
           onClick={() => window.open('/sentinel-extension.zip', '_blank')}
-          className="glass-card px-4 py-2 flex items-center gap-2 border border-white/10 hover:border-neon-purple/50 hover:bg-neon-purple/20 transition-all group"
+          className="glass-card px-4 py-2 flex items-center gap-2 border border-white/10 hover:border-[#00f8bb]/50 hover:bg-[#00f8bb]/10 transition-all group"
         >
-          <Globe size={14} className="text-gray-500 group-hover:text-neon-purple" />
+          <Globe size={14} className="text-gray-500 group-hover:text-[#00f8bb]" />
           <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover:text-white">Download Extension</span>
         </button>
       </div>
@@ -48,10 +48,10 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-4"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-neon-purple mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--cta-color)] mx-auto">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-purple opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-neon-purple"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--cta-color)] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--cta-color)]"></span>
             </span>
             Sentinel AI Active
           </div>
@@ -155,7 +155,7 @@ export default function Home() {
             <div className="mt-10 pt-6 border-t border-white/5">
               <button 
                 onClick={() => window.open('/sentinel-extension.zip', '_blank')}
-                className="w-full bg-neon-purple/80 hover:bg-neon-purple text-white py-3 rounded font-black text-[10px] uppercase tracking-[0.3em] transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)]"
+                className="cta-button w-full"
               >
                 Execute Download Protocol
               </button>

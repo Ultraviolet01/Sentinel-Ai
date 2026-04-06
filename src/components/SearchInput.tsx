@@ -36,20 +36,24 @@ export const SearchInput: React.FC<SearchInputProps> = ({ onSearch, isLoading })
           className="w-full bg-transparent border-none text-white font-mono placeholder:text-white/20 focus:ring-0 outline-none p-4 caret-cyber-cyan"
           disabled={isLoading}
         />
-          <button 
+          <button
             type="submit"
             disabled={isLoading}
-            className="pr-4 pl-2 text-gray-500 hover:text-white transition-colors disabled:opacity-50"
+            className="cta-button h-12 w-12 md:w-auto flex items-center justify-center gap-2 px-4 text-black font-bold"
+            style={{ backgroundColor: '#00f8bb' }}
           >
             {isLoading ? (
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
               >
-                <Zap size={20} className="text-neon-purple" />
+                <Zap size={20} />
               </motion.div>
             ) : (
-              <Search size={20} />
+              <>
+                <Search size={20} />
+                <span className="hidden md:inline">Initialize Scan</span>
+              </>
             )}
           </button>
         </div>
