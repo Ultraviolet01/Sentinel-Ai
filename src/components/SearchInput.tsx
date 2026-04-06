@@ -22,18 +22,18 @@ export const SearchInput: React.FC<SearchInputProps> = ({ onSearch, isLoading })
   return (
     <div className="w-full max-w-xl mx-auto">
       <form onSubmit={handleSubmit} className="relative group">
-        <div className="absolute inset-0 bg-neon-purple/20 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 rounded-lg" />
+        <div className="absolute inset-0 bg-cyber-cyan/10 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 rounded-lg" />
         
-        <div className="relative flex items-center bg-black/40 border border-white/10 group-focus-within:border-neon-purple/50 transition-all duration-300 rounded-lg overflow-hidden backdrop-blur-md">
-          <div className="pl-4 pr-2 text-neon-purple font-mono font-bold animate-pulse-neon">
+        <div className="relative flex items-center bg-black/60 border border-white/5 group-focus-within:border-cyber-cyan/30 transition-all duration-300 rounded-lg overflow-hidden backdrop-blur-md">
+          <div className="pl-4 pr-2 text-cyber-cyan font-mono font-bold animate-pulse">
             {'>'}
           </div>
           <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="PASTE FOUR.MEME URL OR ADDRESS_ [SENTINEL]"
-          className="w-full bg-transparent border-none text-white font-mono placeholder:text-white/20 focus:ring-0 outline-none p-0 caret-neon-purple"
+          placeholder="TARGET_INDEX: PASTE FOUR.MEME URL OR CA_"
+          className="w-full bg-transparent border-none text-white font-mono placeholder:text-white/20 focus:ring-0 outline-none p-4 caret-cyber-cyan"
           disabled={isLoading}
         />
           <button 

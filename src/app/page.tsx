@@ -6,22 +6,19 @@ import { SearchInput } from '@/components/SearchInput';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cpu, Zap, ShieldCheck, TrendingUp, Globe } from 'lucide-react';
 
+import { sanitizeAddress } from '@/lib/utils';
+
 export default function Home() {
   const router = useRouter();
   const [isScanning, setIsScanning] = useState(false);
 
-  const handleSearch = (address: string) => {
+  const handleSearch = (query: string) => {
+    const address = sanitizeAddress(query);
+    if (!address || !address.startsWith('0x')) return; // Basic validation
+    
     setIsScanning(true);
-    setTimeout(() => {
-      router.push(`/scan/${address}`);
-    }, 1500);
+    router.push(`/scan/${address}`);
   };
-
-  const sampleTokens = [
-    { name: 'Binance Coin', symbol: 'BNB', address: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c', icon: <Cpu className="text-yellow-500" /> },
-    { name: 'PancakeSwap', symbol: 'CAKE', address: '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82', icon: <Zap className="text-neon-purple" /> },
-    { name: 'Tether USD', symbol: 'USDT', address: '0x55d398326f99059ff775485246999027b3197955', icon: <ShieldCheck className="text-cyber-green" /> },
-  ];
 
   return (
     <main className="min-h-screen pt-32 pb-20 px-6 relative overflow-hidden flex flex-col items-center">
@@ -58,11 +55,13 @@ export default function Home() {
             </span>
             Sentinel AI Active
           </div>
-          <h1 className="text-5xl md:text-7xl font-black font-orbitron tracking-tighter text-white uppercase italic">
-            Sentinel <br />
-            <span className="text-neon-purple">AI</span>
+          <h1 className="text-6xl md:text-8xl font-black font-orbitron tracking-tighter uppercase italic leading-[0.9]">
+            <span className="bg-gradient-to-r from-[#90f7ec] to-[#ffb7f5] bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(144,247,236,0.3)]">
+              Sentinel <br />
+              AI
+            </span>
           </h1>
-          <p className="text-gray-500 font-mono text-xs md:text-sm max-w-xl mx-auto uppercase tracking-widest leading-relaxed">
+          <p className="text-gray-400 font-mono text-xs md:text-sm max-w-xl mx-auto uppercase tracking-[0.2em] leading-relaxed opacity-80">
             The decentralized intelligence hub for the Four.Meme ecosystem. Verifiable on-chain audits, trend anthropological reports, and risk guarding.
           </p>
         </motion.div>
@@ -98,34 +97,69 @@ export default function Home() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Sample Scans Demonstration */}
+        {/* Extension Installation Protocol */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="pt-12 space-y-6"
+          className="pt-12 space-y-8"
         >
-          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-600 flex items-center justify-center gap-2">
-            <TrendingUp size={14} />
-            Featured Sentinel Demonstrations
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {sampleTokens.map((token) => (
-              <button 
-                key={token.symbol}
-                onClick={() => handleSearch(token.address)}
-                className="glass-card p-6 text-left hover:bg-white/[0.08] hover:border-white/20 transition-all group"
-              >
-                <div className="flex justify-between items-start mb-4">
-                   <div className="p-2 bg-white/5 border border-white/10 rounded group-hover:scale-110 transition-transform">
-                      {token.icon}
-                   </div>
-                   <div className="text-[8px] font-black font-mono text-gray-500 uppercase tracking-tighter">Verified_Source</div>
+          <div className="max-w-2xl mx-auto glass-card p-8 border border-white/5 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <Globe size={80} className="text-neon-purple" />
+            </div>
+            
+            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-neon-purple flex items-center justify-center gap-2 mb-8">
+              <Zap size={14} />
+              Sentinel Protocol: Extension Setup
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-neon-purple font-mono">01</div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black text-white uppercase tracking-widest">Download Package</p>
+                    <p className="text-[9px] text-gray-500 font-mono leading-relaxed">Secure the sentinel-extension.zip from the portal uplink.</p>
+                  </div>
                 </div>
-                <div className="font-orbitron text-sm font-bold text-white mb-1">{token.name}</div>
-                <div className="font-mono text-[10px] text-gray-500 italic">Analyze ${token.symbol} Audit Trace</div>
+                
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-neon-purple font-mono">02</div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black text-white uppercase tracking-widest">Access Extensions</p>
+                    <p className="text-[9px] text-gray-500 font-mono leading-relaxed">Navigate to chrome://extensions in your browser interface.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-neon-purple font-mono">03</div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black text-white uppercase tracking-widest">Developer Mode</p>
+                    <p className="text-[9px] text-gray-500 font-mono leading-relaxed">Toggle Developer Mode [ON] in the upper-right control panel.</p>
+                  </div>
+                </div>
+                
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-neon-purple font-mono">04</div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black text-white uppercase tracking-widest">Load Sentinel</p>
+                    <p className="text-[9px] text-gray-500 font-mono leading-relaxed">Drag zip or select 'Load unpacked' to initialize deep-scan protection.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-10 pt-6 border-t border-white/5">
+              <button 
+                onClick={() => window.open('/sentinel-extension.zip', '_blank')}
+                className="w-full bg-neon-purple/80 hover:bg-neon-purple text-white py-3 rounded font-black text-[10px] uppercase tracking-[0.3em] transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)]"
+              >
+                Execute Download Protocol
               </button>
-            ))}
+            </div>
           </div>
         </motion.div>
       </div>

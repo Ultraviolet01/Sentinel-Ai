@@ -10,12 +10,7 @@ import { SearchInput } from '@/components/SearchInput';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 
-interface ScanViewProps {
-  initialData: {
-    metadata: TokenMetadata;
-    result: ScorecardResult;
-  };
-}
+import { sanitizeAddress } from '@/lib/utils';
 
 export const ScanView: React.FC<ScanViewProps> = ({ initialData }) => {
   const [data, setData] = useState(initialData);
@@ -24,7 +19,9 @@ export const ScanView: React.FC<ScanViewProps> = ({ initialData }) => {
   const router = useRouter();
 
   const handleSearch = (query: string) => {
-    router.push(`/scan/${query}`);
+    const address = sanitizeAddress(query);
+    if (!address || !address.startsWith('0x')) return;
+    router.push(`/scan/${address}`);
   };
 
   return (

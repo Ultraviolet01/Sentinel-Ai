@@ -19,17 +19,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Invalid address or Four.Meme URL." }, { status: 400 });
     }
 
-    // 1. Fetch live data
-    console.log(`[Sentinel_Audit] Step 1: Fetching metadata for ${address}...`);
-    const metadata = await fetchTokenData(address);
+    // 1. Fetch live data & memory context in parallel (Degen Speed)
+    console.log(`[Sentinel_Audit] Step 1 & 2: Parallelizing metadata fetch & Unibase memory context...`);
+    const [metadata, history] = await Promise.all([
+      fetchTokenData(address),
+      unibase.getContext(address)
+    ]);
+
     if (!metadata) {
       console.warn(`[Sentinel_Audit] Step 1 Failed: Token not found.`);
       return NextResponse.json({ success: false, error: "Token metadata not found on BSC." }, { status: 404 });
     }
-
-    // 2. Fetch decentralized memory context (Unibase)
-    console.log(`[Sentinel_Audit] Step 2: Accessing Unibase memory...`);
-    const history = await unibase.getContext(address);
 
     // 3. Coordinate AI Agent Trio (Watch, Narrative, Alert)
     console.log(`[Sentinel_Audit] Step 3: Triggering AI Scorecard Generation...`);
@@ -45,9 +45,9 @@ export async function POST(request: Request) {
       });
     }
 
-    // 5. Save to Unibase Membase Agent Memory (Persistent context)
-    console.log(`[Sentinel_Audit] Step 5: Persisting to Persistent Memory...`);
-    await unibase.saveScan(metadata.address, metadata, result).catch(e => {
+    // 5. Save to Unibase Membase Agent Memory (PERSISTENCE - NON-BLOCKING)
+    console.log(`[Sentinel_Audit] Step 5: Initializing Background Persistence...`);
+    unibase.saveScan(metadata.address, metadata, result).catch(e => {
       console.error("[Sentinel_Audit] Unibase write failed.");
     });
 

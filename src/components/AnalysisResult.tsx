@@ -27,35 +27,40 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
 
   const getVerdictTheme = (verdict: string) => {
     switch (verdict) {
-      case 'Promising': return {
-        border: 'border-cyber-green',
-        bg: 'bg-cyber-green/10',
-        text: 'text-cyber-green',
-        glow: 'shadow-[0_0_20px_rgba(0,255,189,0.3)]'
-      };
-      case 'Watch': return {
-        border: 'border-blue-400',
-        bg: 'bg-blue-400/10',
-        text: 'text-blue-400',
-        glow: 'shadow-[0_0_20px_rgba(96,165,250,0.3)]'
-      };
-      case 'High Risk': return {
-        border: 'border-orange-500',
-        bg: 'bg-orange-500/10',
-        text: 'text-orange-500',
-        glow: 'shadow-[0_0_20px_rgba(249,115,22,0.3)]'
-      };
-      case 'Avoid': return {
-        border: 'border-red-500',
-        bg: 'bg-red-500/10',
-        text: 'text-red-500',
-        glow: 'shadow-[0_0_20px_rgba(239,68,68,0.3)]'
-      };
+      case 'Promising': 
+      case 'Safe': 
+        return {
+          border: 'border-cyber-green',
+          bg: 'bg-cyber-green/10',
+          text: 'text-cyber-green',
+          glow: 'drop-shadow-[0_0_25px_rgba(0,255,163,0.8)]', // Massive Green Glow
+          hex: '#00ffa3'
+        };
+      case 'High Risk': 
+      case 'Avoid': 
+      case 'Danger': 
+        return {
+          border: 'border-cyber-red',
+          bg: 'bg-cyber-red/10',
+          text: 'text-cyber-red',
+          glow: 'drop-shadow-[0_0_25px_rgba(255,77,77,0.8)]', // Massive Red Glow
+          hex: '#ff4d4d'
+        };
+      case 'Watch': 
+      case 'Medium Risk': 
+        return {
+          border: 'border-cyber-orange',
+          bg: 'bg-cyber-orange/10',
+          text: 'text-cyber-orange',
+          glow: 'drop-shadow-[0_0_25px_rgba(255,183,0,0.6)]', // Intense Orange Glow
+          hex: '#ffb700'
+        };
       default: return {
         border: 'border-gray-500',
         bg: 'bg-gray-500/10',
         text: 'text-gray-500',
-        glow: ''
+        glow: '',
+        hex: '#666'
       };
     }
   };
@@ -118,172 +123,144 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
       </div>
 
       {/* SECTION 2: AUDIT ENGINE (THE SENTINEL) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Overall Score Gauge - Vertical Stack on Mobile */}
-        <div className="lg:col-span-4 glass-card p-6 md:p-8 flex flex-col md:flex-row lg:flex-col items-center justify-center gap-8 lg:space-y-6">
-           <div className="scanline" />
-           <div className="relative">
-              {/* Multilayer SVG Gauge */}
-              <svg className="w-48 h-48 transform -rotate-90">
-                <circle cx="96" cy="96" r="88" stroke="currentColor" strokeWidth="2" fill="transparent" className="text-white/5" />
-                <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="1" fill="transparent" className="text-white/5" strokeDasharray="4 4" />
-                <motion.circle
-                  cx="96" cy="96" r="88"
-                  stroke="currentColor" strokeWidth="6" strokeLinecap="square"
-                  fill="transparent" strokeDasharray="552.9"
-                  initial={{ strokeDashoffset: 552.9 }}
-                  animate={{ strokeDashoffset: 552.9 - (552.9 * (result.scores.risk || 0)) / 100 }}
-                  transition={{ duration: 2, ease: "circOut" }}
-                  className={`${theme.text} opacity-80`}
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                 <motion.span 
-                   initial={{ opacity: 0 }}
-                   animate={{ opacity: 1 }}
-                   className="text-6xl font-black font-orbitron tracking-tighter"
-                 >
-                   {result.scores.risk}
-                 </motion.span>
-                 <span className="text-[10px] uppercase font-black tracking-[0.3em] opacity-30 mt-[-5px]">Sentinel Grade</span>
-                 
-                 {/* Confidence Meter Badge */}
-                 <div className="mt-4 flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10">
-                    <div className={`w-1.5 h-1.5 rounded-full ${result.confidenceLevel > 80 ? 'bg-cyber-green' : 'bg-yellow-500'} animate-pulse`} />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">
-                      Confidence: {result.confidenceLevel}%
-                    </span>
+        {/* Main Verdict & Summary */}
+        <div className="lg:col-span-8 space-y-6">
+           <div className="glass-card p-8 border-l-4 border-cyber-green bg-[#00ffa3]/[0.02]">
+              <div className="flex flex-col gap-2">
+                 <div className="flex items-center gap-2 mb-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-cyber-green animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyber-green/60">Risk Assessment Analysis</span>
+                 </div>
+                 <h1 className={`text-6xl md:text-8xl font-black font-orbitron tracking-tighter uppercase italic leading-none ${theme.text} ${theme.glow} transition-all duration-700`}>
+                    {result.finalVerdict}
+                 </h1>
+                 <p className="text-gray-300 font-mono text-sm md:text-base leading-relaxed mt-6 border-l-2 border-cyber-green/30 pl-6 italic">
+                    "{result.summary}"
+                 </p>
+                 <div className="mt-8 pt-4 border-t border-white/5 flex items-center gap-4">
+                    <div className="px-3 py-1 bg-white/5 rounded border border-white/10 text-[9px] font-black uppercase tracking-widest text-gray-500">
+                      Confidence: <span className="text-white">{result.confidenceLevel}%</span>
+                    </div>
+                    <div className="px-3 py-1 bg-white/5 rounded border border-white/10 text-[9px] font-black uppercase tracking-widest text-gray-500">
+                      Trace_ID: <span className="text-white">HST-{(result.scores.risk || 0).toString().padStart(3, '0')}</span>
+                    </div>
                  </div>
               </div>
            </div>
-
-           {/* Narrative Durability Circular Meter */}
-           <div className="flex flex-col items-center">
-              <div className="relative w-24 h-24">
-                <div className="scanline rounded-full" />
-                <svg className="w-full h-full transform -rotate-90">
-                  <circle cx="48" cy="48" r="42" stroke="currentColor" strokeWidth="2" fill="transparent" className="text-white/5" />
-                  <motion.circle
-                    cx="48" cy="48" r="42"
-                    stroke="currentColor" strokeWidth="4" strokeLinecap="round"
-                    fill="transparent" strokeDasharray="263.9"
-                    initial={{ strokeDashoffset: 263.9 }}
-                    animate={{ strokeDashoffset: 263.9 - (263.9 * (result.durabilityScore || 0)) / 100 }}
-                    className="text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.5)]"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-xl font-black font-orbitron text-white">{result.durabilityScore}%</span>
-                </div>
-              </div>
-              <span className="text-[8px] uppercase font-black tracking-[0.2em] text-cyan-400/60 mt-2">Narrative Durability</span>
-           </div>
-           
-           <div className={`px-5 py-2 rounded border font-black uppercase tracking-widest text-[10px] ${theme.border} ${theme.bg} ${theme.text} ${theme.glow} animate-pulse-neon`}>
-             {result.finalVerdict}
-           </div>
         </div>
 
-        {/* AI Verdict & Rubric */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
-           {/* Verdict Panel */}
-           <div className={`glass-card p-6 border-r-4 ${theme.border}`}>
-              <div className="scanline" />
-              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 flex items-center gap-2">
-                <Zap size={12} className="text-neon-purple" />
-                Analysis Verdict
-              </h3>
-              <p className="text-xl md:text-2xl font-black font-orbitron leading-tight mb-4">
-                {result.summary}
-              </p>
-           </div>
-
-           {/* Rubric Meters */}
-           <div className="glass-card p-6 grid grid-cols-2 gap-x-10 gap-y-6">
-              {[
-                { label: 'Narrative', val: result.breakdown.narrative, max: 20 },
-                { label: 'Momentum', val: result.breakdown.momentum, max: 20 },
-                { label: 'Liquidity', val: result.breakdown.liquidity, max: 20 },
-                { label: 'Distribution', val: result.breakdown.holders, max: 15 },
-                { label: 'Contract Safety', val: result.breakdown.safety, max: 15 },
-                { label: 'Meme Launch Quality', val: result.breakdown.launchQuality, max: 10 },
-              ].map((item) => (
-                <div key={item.label} className="space-y-1.5">
-                   <div className="flex justify-between text-[8px] font-black uppercase tracking-[0.2em] opacity-50">
-                     <span>{item.label}</span>
-                     <span>{item.val}/{item.max}</span>
-                   </div>
-                   <div className="h-1 w-full bg-white/5 flex gap-1">
-                      {Array.from({ length: 10 }).map((_, i) => (
-                        <motion.div 
-                          key={i}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: i < (item.val / item.max) * 10 ? 1 : 0.1 }}
-                          className={`h-full flex-1 ${i < (item.val / item.max) * 10 ? 'bg-white/50' : 'bg-white/10'}`}
-                          transition={{ delay: i * 0.05 }}
-                        />
-                      ))}
-                   </div>
-                </div>
-              ))}
+        {/* Global Risk Gauge */}
+        <div className="lg:col-span-4 glass-card p-8 flex flex-col items-center justify-center text-center">
+           <div className="relative w-48 h-48">
+              <svg className="w-full h-full transform -rotate-90">
+                <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-white/5" />
+                <motion.circle
+                  cx="96" cy="96" r="80"
+                  stroke={theme.hex} strokeWidth="8" strokeLinecap="square"
+                  fill="transparent" strokeDasharray="502.6"
+                  initial={{ strokeDashoffset: 502.6 }}
+                  animate={{ strokeDashoffset: 502.6 - (502.6 * (result.scores.risk || 0)) / 100 }}
+                  transition={{ duration: 2, ease: "circOut" }}
+                  className="drop-shadow-[0_0_15px_rgba(0,255,163,0.3)]"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                 <span className={`text-7xl font-black font-orbitron tracking-tighter ${theme.text}`}>{result.scores.risk}</span>
+                 <span className="text-[10px] uppercase font-black tracking-[0.3em] opacity-30 mt-[-5px]">Risk Score</span>
+              </div>
            </div>
         </div>
       </div>
 
+      {/* SECTION 3: SIGNAL TRIO (THREAT, TRUST, MISSING) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+         {/* THREAT SIGNALS */}
+         <div className="glass-card p-6 border-t-2 border-cyber-red bg-[#ff4d4d]/[0.02] flex flex-col">
+            <div className="flex items-center gap-3 mb-6">
+               <div className="p-2 bg-cyber-red/10 rounded border border-cyber-red/20 shadow-[0_0_10px_rgba(255,77,77,0.2)]">
+                  <ShieldAlert size={16} className="text-cyber-red" />
+               </div>
+               <div>
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-cyber-red leading-none">Threat</h3>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-cyber-red/50">Signals</span>
+               </div>
+            </div>
+            <div className="space-y-3 flex-grow">
+               {result.topRedFlags.length > 0 ? result.topRedFlags.map((flag, i) => (
+                 <div key={i} className="p-4 bg-cyber-red/[0.03] border border-cyber-red/10 rounded-md flex items-start gap-3 group hover:border-cyber-red/30 transition-colors">
+                    <ShieldAlert size={12} className="text-cyber-red/60 mt-1 flex-shrink-0" />
+                    <p className="text-[11px] font-bold text-gray-300 uppercase leading-tight tracking-tight">{flag}</p>
+                 </div>
+               )) : (
+                 <div className="p-4 border border-white/5 rounded-md text-[10px] font-mono text-gray-600 text-center italic">No threats localized.</div>
+               )}
+            </div>
+         </div>
+
+         {/* TRUST SIGNALS */}
+         <div className="glass-card p-6 border-t-2 border-cyber-green bg-[#00ffa3]/[0.02] flex flex-col">
+            <div className="flex items-center gap-3 mb-6">
+               <div className="p-2 bg-cyber-green/10 rounded border border-cyber-green/20 shadow-[0_0_10px_rgba(0,255,163,0.2)]">
+                  <ShieldCheck size={16} className="text-cyber-green" />
+               </div>
+               <div>
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-cyber-green leading-none">Trust</h3>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-cyber-green/50">Signals</span>
+               </div>
+            </div>
+            <div className="space-y-3 flex-grow">
+               {result.topPositiveSignals.length > 0 ? result.topPositiveSignals.map((sig, i) => (
+                 <div key={i} className="p-4 bg-cyber-green/[0.03] border border-cyber-green/10 rounded-md flex items-start gap-3 group hover:border-cyber-green/30 transition-colors">
+                    <ShieldCheck size={12} className="text-cyber-green/60 mt-1 flex-shrink-0" />
+                    <p className="text-[11px] font-bold text-gray-300 uppercase leading-tight tracking-tight">{sig}</p>
+                 </div>
+               )) : (
+                 <div className="p-4 border border-white/5 rounded-md text-[10px] font-mono text-gray-600 text-center italic">No trust signals confirmed.</div>
+               )}
+            </div>
+         </div>
+
+         {/* MISSING SIGNALS (derived from rubric or generic if missing) */}
+         <div className="glass-card p-6 border-t-2 border-cyber-orange bg-[#ffb700]/[0.02] flex flex-col">
+            <div className="flex items-center gap-3 mb-6">
+               <div className="p-2 bg-cyber-orange/10 rounded border border-cyber-orange/20 shadow-[0_0_10px_rgba(255,183,0,0.2)]">
+                  <Cpu size={16} className="text-cyber-orange" />
+               </div>
+               <div>
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-cyber-orange leading-none">Missing</h3>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-cyber-orange/50">Signals</span>
+               </div>
+            </div>
+            <div className="space-y-3 flex-grow">
+               {result.penalties.length > 0 ? result.penalties.map((p, i) => (
+                 <div key={i} className="p-4 bg-cyber-orange/[0.03] border border-cyber-orange/10 rounded-md flex items-start gap-3 group hover:border-cyber-orange/30 transition-colors">
+                    <div className="w-1.5 h-1.5 rounded-full bg-cyber-orange/60 mt-2 flex-shrink-0" />
+                    <p className="text-[11px] font-bold text-gray-300 uppercase leading-tight tracking-tight">{p.label}</p>
+                 </div>
+               )) : (
+                 <div className="p-4 border border-white/5 rounded-md text-[10px] font-mono text-gray-600 text-center italic">Full data sync achieved.</div>
+               )}
+            </div>
+         </div>
+      </div>
+
       {/* SECTION: SENTINEL AGENT HUB */}
-      <div className="space-y-4">
-         <h3 className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-600 pl-2">
-           Autonomous Sentinel Network [Unibase_Membase]
+      <div className="space-y-4 pt-12">
+         <h3 className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-700 pl-2">
+           Autonomous Sentinel Network [Trace_Log]
          </h3>
          <SentinelAgents agents={result.agents} />
       </div>
 
-      {/* SECTION 3: RED FLAGS & SIGNALS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-         {/* Red Flags - Sharp & Aggressive */}
-         <div className="glass-card p-6 border-l-4 border-red-500/50 bg-red-500/[0.02]">
-            <div className="scanline" />
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500 mb-4 flex items-center gap-2">
-              <ShieldAlert size={14} />
-              Detected Risk Signals
-            </h3>
-            <div className="space-y-3">
-              {result.topRedFlags.map((flag, i) => (
-                <div key={i} className="p-3 bg-red-500/5 border border-red-500/10 flex items-start gap-3">
-                   <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5" />
-                   <p className="text-xs font-bold text-gray-200 uppercase tracking-tight">{flag}</p>
-                </div>
-              ))}
-            </div>
-         </div>
-
-         {/* Positive Signals - Sleek & Fast */}
-         <div className="glass-card p-6 border-l-4 border-cyber-green/50 bg-cyber-green/[0.02]">
-            <div className="scanline" />
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-cyber-green mb-4 flex items-center gap-2">
-              <ShieldCheck size={14} />
-              Verified Trust Signals
-            </h3>
-            <div className="space-y-3">
-              {result.topPositiveSignals.map((signal, i) => (
-                <div key={i} className="p-3 bg-cyber-green/5 border border-cyber-green/10 flex items-start gap-3">
-                   <div className="w-1.5 h-1.5 rounded-full bg-cyber-green mt-1.5" />
-                   <p className="text-xs font-bold text-gray-200 uppercase tracking-tight">{signal}</p>
-                </div>
-              ))}
-            </div>
-         </div>
-      </div>
-
       {/* SECTION: RAW SENTINEL SIGNALS (THE EVIDENCE) */}
-      <div className="glass-card p-6 overflow-hidden">
-         <div className="scanline" />
-         <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-500 mb-6 flex items-center gap-2">
-            <Cpu size={14} className="text-neon-purple" />
-            Raw Sentinel Signal Trace [Execution_Proof]
+      <div className="glass-card p-8 overflow-hidden mt-12 bg-black/20 border-white/5">
+         <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-600 mb-8 flex items-center gap-2">
+            <Cpu size={14} className="text-cyber-cyan" />
+            Raw Execution Proof [Logic_Trace]
          </h3>
-         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { label: 'Liq/FDV Ratio', val: (parseFloat(metadata.liquidityUsd || '0') / parseFloat(metadata.fdv || '1')).toFixed(4) },
               { label: 'Holder Concentration', val: `${metadata.holderConcentration}%` },
@@ -294,9 +271,9 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
               { label: '24h Momentum', val: `$${parseFloat(metadata.volume24h || '0').toLocaleString()}` },
               { label: 'Sentiment Index', val: `${result.durabilityScore}/100` },
             ].map((sig) => (
-              <div key={sig.label} className="p-3 bg-black/40 border border-white/5 rounded">
-                 <div className="text-[7px] font-black uppercase tracking-widest text-gray-600 mb-1">{sig.label}</div>
-                 <div className="font-mono text-[10px] text-neon-purple tracking-tighter truncate">{sig.val}</div>
+              <div key={sig.label} className="p-4 bg-white/[0.02] border border-white/5 rounded hover:bg-white/[0.05] transition-colors group">
+                 <div className="text-[7px] font-black uppercase tracking-widest text-gray-700 mb-1 group-hover:text-gray-500 transition-colors">{sig.label}</div>
+                 <div className="font-mono text-[11px] text-cyber-cyan tracking-tighter truncate">{sig.val}</div>
               </div>
             ))}
          </div>

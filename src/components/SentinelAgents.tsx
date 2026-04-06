@@ -21,12 +21,12 @@ export const SentinelAgents: React.FC<SentinelAgentsProps> = ({ agents }) => {
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card p-5 border-t-2 border-blue-500/30"
+        className="glass-card p-5 border-t-2 border-cyber-cyan/30"
       >
         <div className="flex items-center justify-between mb-4">
            <div className="flex items-center gap-2">
-             <Eye size={16} className="text-blue-400" />
-             <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Watch Agent</span>
+             <Eye size={16} className="text-cyber-cyan" />
+             <span className="text-[10px] font-black uppercase tracking-widest text-cyber-cyan">Watch Agent</span>
            </div>
            <div className="text-[8px] font-mono text-gray-500 bg-white/5 px-2 py-0.5 rounded">ID: HST-01</div>
         </div>
@@ -40,7 +40,7 @@ export const SentinelAgents: React.FC<SentinelAgentsProps> = ({ agents }) => {
               <motion.div 
                 initial={{ width: 0 }}
                 animate={{ width: `${watch.stability}%` }}
-                className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                className="h-full bg-cyber-cyan shadow-[0_0_10px_rgba(144,247,236,0.5)]"
               />
            </div>
            <p className="text-[11px] text-gray-400 leading-relaxed italic">
@@ -94,8 +94,8 @@ export const SentinelAgents: React.FC<SentinelAgentsProps> = ({ agents }) => {
       >
         <div className="flex items-center justify-between mb-4">
            <div className="flex items-center gap-2">
-             <ShieldAlert size={16} className="text-red-400" />
-             <span className="text-[10px] font-black uppercase tracking-widest text-red-400">Alert Agent</span>
+             <ShieldAlert size={16} className="text-cyber-red" />
+             <span className="text-[10px] font-black uppercase tracking-widest text-cyber-red">Alert Agent</span>
            </div>
            <div className="text-[8px] font-mono text-gray-500 bg-white/5 px-2 py-0.5 rounded">ID: GRD-03</div>
         </div>
@@ -103,12 +103,12 @@ export const SentinelAgents: React.FC<SentinelAgentsProps> = ({ agents }) => {
         <div className="space-y-3">
            <div className="flex justify-between items-center">
               <span className={`text-xs font-black uppercase tracking-[0.2em] flex items-center gap-2 ${
-                alert.severity === 'Critical' ? 'text-red-500' : 
-                alert.severity === 'Warning' ? 'text-orange-500' : 'text-gray-400'
+                alert.severity === 'Critical' ? 'text-cyber-red' : 
+                alert.severity === 'Warning' ? 'text-cyber-orange' : 'text-gray-400'
               }`}>
                 <div className={`w-2 h-2 rounded-full animate-pulse ${
-                  alert.severity === 'Critical' ? 'bg-red-500' : 
-                  alert.severity === 'Warning' ? 'bg-orange-500' : 'bg-gray-500'
+                  alert.severity === 'Critical' ? 'bg-cyber-red' : 
+                  alert.severity === 'Warning' ? 'bg-cyber-orange' : 'bg-gray-500'
                 }`} />
                 {alert.severity}
               </span>

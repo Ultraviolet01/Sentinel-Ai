@@ -1,15 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #020617;
-  --foreground: #f8fafc;
-  --neon-purple: #a855f7;
-  --cyber-green: #00ffbd;
+  --background: #050505;
+  --foreground: #ffffff;
+  --neon-purple: #ffb7f5;
+  --cyber-cyan: #90f7ec;
+  --cyber-green: #00ffa3;
+  --cyber-red: #ff4d4d;
+  --cyber-orange: #ffb700;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
+  font-family: var(--font-orbitron), var(--font-inter), sans-serif;
 }
 
 h1, h2, h3, h4, .font-orbitron {
