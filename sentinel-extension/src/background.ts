@@ -23,14 +23,29 @@ async function setupOffscreen() {
 chrome.runtime.onStartup.addListener(setupOffscreen);
 chrome.runtime.onInstalled.addListener(setupOffscreen);
 
+// Utility: Safe Messaging to Tab (Ignores internal Chrome pages)
+async function safeMessageToTab(tabId: number, message: any) {
+  try {
+    const tab = await chrome.tabs.get(tabId);
+    const url = tab.url || "";
+    const isSupported = url.includes('four.meme') || url.includes('dexscreener.com') || url.includes('x.com') || url.includes('twitter.com') || url.includes('web.telegram.org');
+    
+    if (isSupported) {
+      return await chrome.tabs.sendMessage(tabId, message);
+    }
+  } catch (e) {
+    // Silent Error Protocol: Suppress connection failures for non-supported tabs
+  }
+}
+
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   if (request.action === "WAKE_WORD_DETECTED") {
     handleVoiceScan();
   }
 
   if (request.action === "MIC_PERMISSION_DENIED") {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab?.id) chrome.tabs.sendMessage(tab.id, { action: "SHOW_PERMISSION_ERROR" });
+    console.warn("[Sentinel_AI] Mic Permission Denied. Initializing Authorization Bridge...");
+    chrome.tabs.create({ url: chrome.runtime.getURL('setup.html') });
   }
 
   if (request.action === "ANALYZE_TOKEN") {
@@ -45,13 +60,12 @@ async function handleVoiceScan() {
   if (!tab?.id) return;
 
   // Trigger extraction in the content script
-  const extraction = await chrome.tabs.sendMessage(tab.id, { action: "EXTRACT_TOKEN" });
+  const extraction = await safeMessageToTab(tab.id, { action: "EXTRACT_TOKEN" });
   if (!extraction || extraction.confidence === 0) return;
 
   // Perform full analysis
   performAnalysis(extraction, "voice", (res: any) => {
     if (res.success && res.data.audioBase64) {
-      // Send back to offscreen for playback
       chrome.runtime.sendMessage({ 
         action: "PLAY_VOICE_RESULT", 
         audioBase64: res.data.audioBase64 
@@ -80,8 +94,8 @@ chrome.commands.onCommand.addListener(async (command) => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) return;
 
-    // Show HUD to the user
-    chrome.tabs.sendMessage(tab.id, { action: "SHOW_VOICE_HUD" });
+    // Show HUD to the user (Safe Check)
+    await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD" });
 
     // Ensure offscreen is ready
     await setupOffscreen();

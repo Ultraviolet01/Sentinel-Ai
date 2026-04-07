@@ -13,6 +13,7 @@ export default defineConfig({
         background: resolve(__dirname, 'src/background.ts'),
         content: resolve(__dirname, 'src/content.ts'),
         offscreen: resolve(__dirname, 'src/offscreen/offscreen.html'),
+        setup: resolve(__dirname, 'setup.html'),
       },
       output: {
         entryFileNames: (chunkInfo) => {
