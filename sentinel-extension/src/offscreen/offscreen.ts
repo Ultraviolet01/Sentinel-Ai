@@ -1,6 +1,6 @@
 /**
  * Sentinel AI: Operative Offscreen Voice Layer
- * Continuous background listening for wake words and tokens.
+ * Manual "One-Shot" listening for user-triggered commands.
  */
 
 // Define SpeechRecognition for TypeScript
@@ -9,11 +9,11 @@ const SpeechRecognition = (window as any).SpeechRecognition || (window as any).w
 class SentinelVoiceListener {
   private recognition: any;
   private isPermitted: boolean = true;
-  private isRestarting: boolean = false;
+  private timeoutId: any;
 
   constructor() {
     this.initializeRecognition();
-    console.log("[Sentinel_Offscreen] Voice-First Operative Listening Active.");
+    console.log("[Sentinel_Offscreen] Manual Trigger Listening Engine Initialized.");
   }
 
   private initializeRecognition() {
@@ -23,26 +23,17 @@ class SentinelVoiceListener {
     }
 
     this.recognition = new SpeechRecognition();
-    this.recognition.continuous = true;
+    this.recognition.continuous = false; // "One-Shot" mode
     this.recognition.interimResults = true;
     this.recognition.lang = 'en-US';
 
     this.recognition.onresult = (event: any) => {
-      // In continuous mode, the transcript grows. 
-      // We process only the most recent results to avoid "transcript bloating".
-      let transcript = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript.toLowerCase();
-      }
+      const transcript = Array.from(event.results)
+        .map((result: any) => result[0].transcript.toLowerCase())
+        .join('');
 
-      this.processTranscript(transcript);
-    };
-
-    this.recognition.onend = () => {
-      console.log("[Sentinel_Offscreen] Recognition session ended.");
-      // Keep active ONLY if permitted and not already in a restart cycle
-      if (this.isPermitted && !this.isRestarting) {
-        this.restartRecognition();
+      if (event.results[0].isFinal) {
+        this.handleCapturedCommand(transcript);
       }
     };
 
@@ -52,76 +43,89 @@ class SentinelVoiceListener {
         this.isPermitted = false;
         chrome.runtime.sendMessage({ action: "MIC_PERMISSION_DENIED" });
       }
-      
-      if (event.error === 'no-speech' || event.error === 'aborted') {
-         // Silently restart for common transient errors
-         this.restartRecognition();
-      }
+      this.stopListening();
     };
+
+    this.recognition.onend = () => {
+      console.log("[Sentinel_Offscreen] Recognition session ended.");
+    };
+  }
+
+  public startListening() {
+    if (!this.isPermitted) {
+       chrome.runtime.sendMessage({ action: "MIC_PERMISSION_DENIED" });
+       return;
+    }
 
     try {
       this.recognition.start();
-    } catch (e) {
-      console.error("[Sentinel_Offscreen] Failed to start recognition:", e);
-    }
-  }
-
-  private restartRecognition() {
-    if (this.isRestarting) return;
-    this.isRestarting = true;
-    
-    // Safety delay to prevent browser throttling and allow cleanup
-    setTimeout(() => {
-      this.isRestarting = false;
-      try {
-        this.recognition.start();
-      } catch (e) {
-        // Recognition might already be running
-      }
-    }, 200);
-  }
-
-  private processTranscript(transcript: string) {
-    const triggerWords = ["hey sentinel", "sentinel", "scan this", "audit this", "start scan"];
-    const foundTrigger = triggerWords.find(word => transcript.includes(word));
-
-    if (foundTrigger) {
-      console.log("[Sentinel_Offscreen] One-Shot Trigger Detected:", transcript);
+      console.log("[Sentinel_Offscreen] Now listening for manual command...");
       
-      // Send message to background
-      chrome.runtime.sendMessage({ 
-        action: "WAKE_WORD_DETECTED",
-        transcript: transcript // Pass full context for future command extraction
-      });
+      // Auto-stop after 8 seconds of silence to save resources
+      if (this.timeoutId) clearTimeout(this.timeoutId);
+      this.timeoutId = setTimeout(() => {
+        console.warn("[Sentinel_Offscreen] Listening timeout reached.");
+        this.stopListening();
+      }, 8000);
 
-      // Crucial: Stop and restart to clear the internal transcript buffer
-      this.recognition.stop();
-      this.playPing();
+    } catch (e) {
+      console.warn("[Sentinel_Offscreen] Could not start, likely already active.");
     }
+  }
+
+  private stopListening() {
+    try {
+      this.recognition.stop();
+    } catch (e) {}
+    if (this.timeoutId) clearTimeout(this.timeoutId);
+  }
+
+  private handleCapturedCommand(transcript: string) {
+    this.stopListening();
+    console.log("[Sentinel_Offscreen] Captured Command:", transcript);
+    
+    // Broadcast back to background
+    chrome.runtime.sendMessage({ 
+      action: "WAKE_WORD_DETECTED", 
+      transcript: transcript 
+    });
+    
+    this.playPing();
   }
 
   private playPing() {
-     // A subtle audible cue that Sentinel is processing
      const ping = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFRm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YV9vT18A'); 
      ping.volume = 0.2;
      ping.play().catch(() => {});
   }
 }
 
-// Start listener
+// Start listener instance
 const listener = new SentinelVoiceListener();
 
-// Handle cross-document audio playback (from Background)
+// Handle cross-document messaging (from Background)
 chrome.runtime.onMessage.addListener((request) => {
+  if (request.action === "START_TRIGGERED_LISTENING") {
+    listener.startListening();
+  }
+
   if (request.action === "PLAY_VOICE_RESULT" && request.audioBase64) {
-    console.log("[Sentinel_Offscreen] Playing requested voice audit result...");
+    console.log("[Sentinel_Offscreen] Delivering oral audit results...");
     const src = request.audioBase64.startsWith('data:audio') ? request.audioBase64 : `data:audio/mpeg;base64,${request.audioBase64}`;
     const audio = new Audio(src);
-    audio.volume = 1.0;
     
+    audio.onplay = () => {
+       chrome.runtime.sendMessage({ action: "UPDATE_HUD_PHASE", phase: "SPEAKING" });
+    };
+    
+    audio.onended = () => {
+       chrome.runtime.sendMessage({ action: "UPDATE_HUD_PHASE", phase: "IDLE" });
+    };
+
     audio.play()
-      .then(() => console.log("[Sentinel_Offscreen] Playback successful."))
-      .catch((err) => console.error("[Sentinel_Offscreen] Playback blocked or failed:", err));
+      .then(() => console.log("[Sentinel_Offscreen] Playback active."))
+      .catch((err) => console.error("[Sentinel_Offscreen] Playback blocked:", err));
   }
 });
+
 

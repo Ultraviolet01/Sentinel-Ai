@@ -85,6 +85,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     handleVoiceScan(request.transcript);
   }
 
+  if (request.action === "TRIGGER_COMMAND_LISTENING") {
+    console.log("[Sentinel_AI] Manual trigger received. Initializing Offscreen Listener.");
+    chrome.runtime.sendMessage({ action: "START_TRIGGERED_LISTENING" });
+  }
+
+  if (request.action === "UPDATE_HUD_PHASE") {
+    // Proxy phase updates from offscreen to the active tab
+    chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+      if (tab?.id) {
+        safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD", status: request.phase });
+      }
+    });
+  }
+
   if (request.action === "MIC_PERMISSION_DENIED") {
     console.warn("[Sentinel_AI] Mic Permission Denied. Initializing Authorization Bridge...");
     const setupUrl = chrome.runtime.getURL('setup.html');
@@ -106,6 +120,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true; 
   }
 });
+
 
 
 async function performAnalysis(extraction: any, scanMode: string, callback: Function) {

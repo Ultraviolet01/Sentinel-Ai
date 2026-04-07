@@ -241,13 +241,27 @@ function bootstrapSentinelOrb() {
         0%, 100% { box-shadow: 0 0 20px rgba(0, 248, 187, 0.2); border-color: rgba(0, 248, 187, 0.3); transform: scale(1); }
         50% { box-shadow: 0 0 40px rgba(0, 248, 187, 0.6); border-color: rgba(0, 248, 187, 0.8); transform: scale(1.1); }
       }
+      @keyframes listening-pulse {
+        0%, 100% { box-shadow: 0 0 15px #00e0ff; transform: scale(1); border-color: #00e0ff; }
+        50% { box-shadow: 0 0 35px #00e0ff; transform: scale(1.15); border-color: #fff; }
+      }
+      @keyframes speaking-wave {
+        0% { transform: scale(1); box-shadow: 0 0 20px #00f8bb; }
+        25% { transform: scale(1.1) rotate(5deg); }
+        50% { transform: scale(1.05) rotate(-5deg); }
+        100% { transform: scale(1); box-shadow: 0 0 40px #00f8bb; }
+      }
       @keyframes fast-pulse {
         0%, 100% { box-shadow: 0 0 10px #00f8bb; transform: scale(1); }
         50% { box-shadow: 0 0 30px #00f8bb; transform: scale(1.2); }
       }
-      .sentinel-listening {
-        animation: breathing-glow 2s ease-in-out infinite !important;
-        background: rgba(0, 248, 187, 0.1) !important;
+      .sentinel-listening-mode {
+        animation: listening-pulse 1.5s ease-in-out infinite !important;
+        background: rgba(0, 224, 255, 0.2) !important;
+      }
+      .sentinel-speaking-mode {
+        animation: speaking-wave 0.8s ease-in-out infinite !important;
+        background: rgba(0, 248, 187, 0.2) !important;
       }
       .sentinel-processing {
         animation: fast-pulse 0.5s infinite !important;
@@ -260,15 +274,24 @@ function bootstrapSentinelOrb() {
     </style>
   `;
 
+  orb.onclick = () => {
+     console.log("[Sentinel_AI] Manual trigger requested via Orb click.");
+     chrome.runtime.sendMessage({ action: "TRIGGER_COMMAND_LISTENING" });
+     showSentinelHUD("LISTENING");
+  };
+
   document.body.appendChild(orb);
 }
 
 function showSentinelHUD(status: string = "WAITING") {
   hideSentinelHUD(); 
   const orb = document.getElementById('sentinel-pinned-orb');
+  
   if (orb) {
-    orb.classList.add('sentinel-listening');
-    if (status !== "WAITING") orb.classList.add('sentinel-processing');
+    orb.className = ''; // Reset classes
+    if (status === "LISTENING") orb.classList.add('sentinel-listening-mode');
+    else if (status === "SPEAKING") orb.classList.add('sentinel-speaking-mode');
+    else if (status === "ANALYZING") orb.classList.add('sentinel-processing');
   }
 
   const hud = document.createElement('div');
@@ -301,14 +324,27 @@ function showSentinelHUD(status: string = "WAITING") {
   let duration = 5000;
 
   switch(status) {
+    case 'LISTENING':
+      hud.style.borderColor = "#00e0ff";
+      hud.style.color = "#00e0ff";
+      content = `<span>🔵</span> LISTENING FOR COMMAND...`;
+      break;
     case 'HEARING':
-      content = `<span>🟢</span> HEARING COMMAND...`;
+      content = `<span>🟢</span> COMMAND RECEIVED...`;
       break;
     case 'ANALYZING':
       content = `<span style="animation: hud-pulse 1s infinite;">🛰️</span> ANALYZING OPERATIVE TARGET...`;
       break;
+    case 'SPEAKING':
+      hud.style.boxShadow = "0 0 40px rgba(0, 248, 187, 0.6)";
+      content = `<span style="animation: hud-pulse 0.5s infinite;">🔊</span> SENTINEL DELIVERY IN PROGRESS...`;
+      duration = 0; // Controlled by playback end
+      break;
+    case 'IDLE':
+      // Hidden or Very Subtle message
+      return; 
     case 'SUCCESS':
-      content = `<span>✅</span> ANALYSIS COMPLETE: TRANSMITTING DATA`;
+      content = `<span>✅</span> ANALYSIS COMPLETE`;
       duration = 3000;
       break;
     case 'NOT_FOUND':
@@ -324,16 +360,17 @@ function showSentinelHUD(status: string = "WAITING") {
       duration = 4000;
       break;
     default:
-      content = `<span style="width: 10px; height: 10px; background: #00f8bb; border-radius: 50%; animation: hud-pulse 1s infinite;"></span> AWAITING INSTRUCTION: [SAY "SENTINEL"]`;
+      content = `<span style="width: 10px; height: 10px; background: #00f8bb; border-radius: 50%; animation: hud-pulse 1s infinite;"></span> SEARCHING...`;
   }
 
   hud.innerHTML = content;
   document.body.appendChild(hud);
   
-  if (status === "SUCCESS" || status === "ERROR" || status === "NOT_FOUND") {
+  if (duration > 0) {
      setTimeout(hideSentinelHUD, duration);
   }
 }
+
 
 
 function showPermissionError() {
