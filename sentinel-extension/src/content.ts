@@ -187,9 +187,11 @@ function performFullExtraction(): ExtractionResult {
   }
 
   if (request.action === "SHOW_VOICE_HUD") {
+    console.log("[Sentinel_AI] Manual HUD trigger:", request.status || "WAITING");
     showSentinelHUD(request.status || "WAITING");
-    sendResponse({ success: true });
+    if (sendResponse) sendResponse({ success: true });
   }
+
 
   if (request.action === "SHOW_PERMISSION_ERROR") {
     showPermissionError();

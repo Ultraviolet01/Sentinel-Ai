@@ -120,7 +120,12 @@ async function performAnalysis(extraction: any, scanMode: string, callback: Func
 // Keyboard Shortcuts
 chrome.commands.onCommand.addListener(async (command) => {
   if (command === "_execute_action") {
-    chrome.action.openPopup(); 
+    try {
+       chrome.action.openPopup(); 
+    } catch (e) {
+       // Open setup as fallback if popup fails
+       chrome.tabs.create({ url: chrome.runtime.getURL('index.html') });
+    }
   }
 
   if (command === "trigger-voice-protocol") {
@@ -128,12 +133,18 @@ chrome.commands.onCommand.addListener(async (command) => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) return;
 
-    // Show HUD to the user (Safe Check)
-    await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD" });
+    // Force HUD to appear regardless of URL for visual feedback
+    try {
+      await chrome.tabs.sendMessage(tab.id, { action: "SHOW_VOICE_HUD", status: "WAITING", force: true });
+    } catch (e) {
+      // Content script may not be loaded on this specific tab
+      console.warn("[Sentinel_AI] HUD failed to load on this tab. Extension may not support this origin.");
+    }
 
-    // Ensure offscreen is ready
+    // Ensure offscreen listener is ready
     await setupOffscreen();
   }
 });
+
 
 console.log("[Sentinel_AI] Background operative layer active (Vercel Sync).");
