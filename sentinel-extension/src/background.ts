@@ -38,21 +38,61 @@ async function safeMessageToTab(tabId: number, message: any) {
   }
 }
 
-chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+async function handleVoiceScan(transcript?: string) {
+  console.log("[Sentinel_AI] Executing Voice Command Protocol. Context:", transcript || "None");
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) return;
+
+  // Show "HEARING" state in HUD via content script
+  await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD", status: "HEARING" });
+
+  try {
+    // Trigger extraction in the content script
+    const extraction = await safeMessageToTab(tab.id, { action: "EXTRACT_TOKEN" });
+    
+    if (!extraction || extraction.confidence < 0.3) {
+      console.warn("[Sentinel_AI] Extraction failed or low confidence. Aborting voice scan.");
+      await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD", status: "NOT_FOUND" });
+      return;
+    }
+
+    // Update HUD to ANALYZING
+    await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD", status: "ANALYZING" });
+
+    // Perform full analysis
+    performAnalysis(extraction, "voice", (res: any) => {
+      if (res.success && res.data.audioBase64) {
+        // Send to offscreen for playback
+        chrome.runtime.sendMessage({ 
+          action: "PLAY_VOICE_RESULT", 
+          audioBase64: res.data.audioBase64 
+        });
+        // Success HUD state
+        safeMessageToTab(tab.id!, { action: "SHOW_VOICE_HUD", status: "SUCCESS" });
+      } else {
+        console.error("[Sentinel_AI] Analysis failed:", res.error);
+        safeMessageToTab(tab.id!, { action: "SHOW_VOICE_HUD", status: "ERROR" });
+      }
+    });
+  } catch (error) {
+    console.error("[Sentinel_AI] Voice Scan Error:", error);
+    await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD", status: "ERROR" });
+  }
+}
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "WAKE_WORD_DETECTED") {
-    handleVoiceScan();
+    handleVoiceScan(request.transcript);
   }
 
   if (request.action === "MIC_PERMISSION_DENIED") {
     console.warn("[Sentinel_AI] Mic Permission Denied. Initializing Authorization Bridge...");
     const setupUrl = chrome.runtime.getURL('setup.html');
     
-    // Check if the setup tab is already open to prevent infinite loops
     chrome.tabs.query({ url: setupUrl }, (tabs) => {
       if (tabs.length === 0) {
         chrome.tabs.create({ url: setupUrl });
       } else {
-        // Bring existing setup tab to the front
         chrome.tabs.update(tabs[0].id!, { active: true });
       }
     });
@@ -60,29 +100,13 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
   if (request.action === "ANALYZE_TOKEN") {
     const { extraction, scanMode = "manual" } = request;
-    performAnalysis(extraction, scanMode, sendResponse);
+    performAnalysis(extraction, scanMode, (res: any) => {
+       sendResponse(res);
+    });
     return true; 
   }
 });
 
-async function handleVoiceScan() {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab?.id) return;
-
-  // Trigger extraction in the content script
-  const extraction = await safeMessageToTab(tab.id, { action: "EXTRACT_TOKEN" });
-  if (!extraction || extraction.confidence === 0) return;
-
-  // Perform full analysis
-  performAnalysis(extraction, "voice", (res: any) => {
-    if (res.success && res.data.audioBase64) {
-      chrome.runtime.sendMessage({ 
-        action: "PLAY_VOICE_RESULT", 
-        audioBase64: res.data.audioBase64 
-      });
-    }
-  });
-}
 
 async function performAnalysis(extraction: any, scanMode: string, callback: Function) {
     apiClient.analyzeToken({

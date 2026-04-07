@@ -68,7 +68,7 @@ class DexScreenerParser extends BaseParser {
   extract(): Partial<ExtractionResult> {
     const caFromUrl = this.findCA(this.url);
     // DexScreener often has the address in a specific info badge
-    const badge = this.doc.querySelector('div[data-testid="token-address"]')?.innerText;
+    const badge = (this.doc.querySelector('div[data-testid="token-address"]') as HTMLElement | null)?.innerText;
     const caFromBadge = badge ? this.findCA(badge) : undefined;
 
     return {
@@ -178,7 +178,7 @@ function performFullExtraction(): ExtractionResult {
 }
 
 // Listen for messages from the Sentinel Terminal (Extension Action)
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+(chrome.runtime.onMessage as any).addListener((request: any, sender: any, sendResponse: any) => {
   if (request.action === "EXTRACT_TOKEN") {
     console.log("[Sentinel_AI] Initiating platform-aware intelligence scan...");
     hideSentinelHUD(); // Cleanup HUD if active
@@ -187,7 +187,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.action === "SHOW_VOICE_HUD") {
-    showSentinelHUD();
+    showSentinelHUD(request.status || "WAITING");
     sendResponse({ success: true });
   }
 
@@ -239,11 +239,19 @@ function bootstrapSentinelOrb() {
         0%, 100% { box-shadow: 0 0 20px rgba(0, 248, 187, 0.2); border-color: rgba(0, 248, 187, 0.3); transform: scale(1); }
         50% { box-shadow: 0 0 40px rgba(0, 248, 187, 0.6); border-color: rgba(0, 248, 187, 0.8); transform: scale(1.1); }
       }
+      @keyframes fast-pulse {
+        0%, 100% { box-shadow: 0 0 10px #00f8bb; transform: scale(1); }
+        50% { box-shadow: 0 0 30px #00f8bb; transform: scale(1.2); }
+      }
       .sentinel-listening {
         animation: breathing-glow 2s ease-in-out infinite !important;
         background: rgba(0, 248, 187, 0.1) !important;
       }
-      @keyframes pulse {
+      .sentinel-processing {
+        animation: fast-pulse 0.5s infinite !important;
+        border-color: #00f8bb !important;
+      }
+      @keyframes hud-pulse {
         0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px #00f8bb; }
         50% { opacity: 0.5; transform: scale(1.2); box-shadow: 0 0 20px #00f8bb; }
       }
@@ -253,10 +261,13 @@ function bootstrapSentinelOrb() {
   document.body.appendChild(orb);
 }
 
-function showSentinelHUD() {
+function showSentinelHUD(status: string = "WAITING") {
   hideSentinelHUD(); 
   const orb = document.getElementById('sentinel-pinned-orb');
-  if (orb) orb.classList.add('sentinel-listening');
+  if (orb) {
+    orb.classList.add('sentinel-listening');
+    if (status !== "WAITING") orb.classList.add('sentinel-processing');
+  }
 
   const hud = document.createElement('div');
   hud.id = 'sentinel-voice-hud';
@@ -284,14 +295,44 @@ function showSentinelHUD() {
     transition: 'all 0.3s ease'
   });
 
-  hud.innerHTML = `
-    <span style="display: inline-block; width: 10px; height: 10px; background: #00f8bb; border-radius: 50%; animation: pulse 1s infinite;"></span>
-    AWAITING INSTRUCTION: [SAY "SENTINEL"]
-  `;
+  let content = '';
+  let duration = 5000;
 
+  switch(status) {
+    case 'HEARING':
+      content = `<span>🟢</span> HEARING COMMAND...`;
+      break;
+    case 'ANALYZING':
+      content = `<span style="animation: hud-pulse 1s infinite;">🛰️</span> ANALYZING OPERATIVE TARGET...`;
+      break;
+    case 'SUCCESS':
+      content = `<span>✅</span> ANALYSIS COMPLETE: TRANSMITTING DATA`;
+      duration = 3000;
+      break;
+    case 'NOT_FOUND':
+      content = `<span>⚠️</span> SCAN FAILED: NO CONTRACT DETECTED`;
+      hud.style.borderColor = "#ff4444";
+      hud.style.color = "#ff4444";
+      duration = 4000;
+      break;
+    case 'ERROR':
+      content = `<span>❌</span> OPERATIVE ERROR: RETRY COMMAND`;
+      hud.style.borderColor = "#ff4444";
+      hud.style.color = "#ff4444";
+      duration = 4000;
+      break;
+    default:
+      content = `<span style="width: 10px; height: 10px; background: #00f8bb; border-radius: 50%; animation: hud-pulse 1s infinite;"></span> AWAITING INSTRUCTION: [SAY "SENTINEL"]`;
+  }
+
+  hud.innerHTML = content;
   document.body.appendChild(hud);
-  setTimeout(hideSentinelHUD, 10000);
+  
+  if (status === "SUCCESS" || status === "ERROR" || status === "NOT_FOUND") {
+     setTimeout(hideSentinelHUD, duration);
+  }
 }
+
 
 function showPermissionError() {
   hideSentinelHUD();
