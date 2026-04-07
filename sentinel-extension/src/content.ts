@@ -181,10 +181,75 @@ function performFullExtraction(): ExtractionResult {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "EXTRACT_TOKEN") {
     console.log("[Sentinel_AI] Initiating platform-aware intelligence scan...");
+    hideSentinelHUD(); // Cleanup HUD if active
     const result = performFullExtraction();
     sendResponse(result);
   }
+
+  if (request.action === "SHOW_VOICE_HUD") {
+    showSentinelHUD();
+    sendResponse({ success: true });
+  }
+
+  if (request.action === "HIDE_VOICE_HUD") {
+    hideSentinelHUD();
+    sendResponse({ success: true });
+  }
   return true;
 });
+
+/**
+ * Sentinel Operative HUD
+ */
+function showSentinelHUD() {
+  hideSentinelHUD(); // Prevent duplicates
+
+  const hud = document.createElement('div');
+  hud.id = 'sentinel-voice-hud';
+  Object.assign(hud.style, {
+    position: 'fixed',
+    top: '20px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    zIndex: '2147483647',
+    padding: '12px 24px',
+    background: 'rgba(0, 0, 0, 0.9)',
+    border: '2px solid #00f8bb',
+    borderRadius: '8px',
+    color: '#00f8bb',
+    fontFamily: '"Orbitron", "Inter", sans-serif',
+    fontSize: '12px',
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: '0.2em',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    pointerEvents: 'none',
+    boxShadow: '0 0 30px rgba(0, 248, 187, 0.3)',
+    transition: 'all 0.3s ease'
+  });
+
+  hud.innerHTML = `
+    <span style="display: inline-block; width: 10px; height: 10px; background: #00f8bb; border-radius: 50%; animation: pulse 1s infinite;"></span>
+    SENTINEL LISTENING... [SAY: "HEY SENTINEL"]
+    <style>
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px #00f8bb; }
+        50% { opacity: 0.5; transform: scale(1.2); box-shadow: 0 0 20px #00f8bb; }
+      }
+    </style>
+  `;
+
+  document.body.appendChild(hud);
+
+  // Auto-hide after 10 seconds if no command
+  setTimeout(hideSentinelHUD, 10000);
+}
+
+function hideSentinelHUD() {
+  const existing = document.getElementById('sentinel-voice-hud');
+  if (existing) existing.remove();
+}
 
 console.log("[Sentinel_AI] Platform-Aware Extraction Engine (V3) initialized.");

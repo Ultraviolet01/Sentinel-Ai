@@ -64,10 +64,22 @@ async function performAnalysis(extraction: any, scanMode: string, callback: Func
     .catch(error => callback({ success: false, error: error.message }));
 }
 
-// Keyboard Shortcut: Open Popup
-chrome.commands.onCommand.addListener((command) => {
+// Keyboard Shortcuts
+chrome.commands.onCommand.addListener(async (command) => {
   if (command === "_execute_action") {
     chrome.action.openPopup(); 
+  }
+
+  if (command === "trigger-voice-protocol") {
+    console.log("[Sentinel_AI] Voice Protocol Initialized (Ctrl+Shift+V)");
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) return;
+
+    // Show HUD to the user
+    chrome.tabs.sendMessage(tab.id, { action: "SHOW_VOICE_HUD" });
+
+    // Ensure offscreen is ready
+    await setupOffscreen();
   }
 });
 

@@ -34,6 +34,13 @@
         "mac": "Command+Shift+S"
       },
       "description": "Trigger Sentinel Operative Scan"
+    },
+    "trigger-voice-protocol": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+V",
+        "mac": "Command+Shift+V"
+      },
+      "description": "Initialize Sentinel Voice Command"
     }
   },
   "content_security_policy": {
