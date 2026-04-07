@@ -3,7 +3,7 @@
   "name": "Sentinel AI: FourScan",
   "version": "1.0.0",
   "description": "Premium real-time AI security audits for the crypto ecosystem.",
-  "permissions": ["activeTab", "scripting", "tabs", "storage", "offscreen", "audio"],
+  "permissions": ["activeTab", "scripting", "tabs", "storage", "offscreen"],
   "action": {
     "default_popup": "index.html",
     "default_icon": {
