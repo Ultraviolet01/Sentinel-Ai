@@ -45,7 +45,17 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
   if (request.action === "MIC_PERMISSION_DENIED") {
     console.warn("[Sentinel_AI] Mic Permission Denied. Initializing Authorization Bridge...");
-    chrome.tabs.create({ url: chrome.runtime.getURL('setup.html') });
+    const setupUrl = chrome.runtime.getURL('setup.html');
+    
+    // Check if the setup tab is already open to prevent infinite loops
+    chrome.tabs.query({ url: setupUrl }, (tabs) => {
+      if (tabs.length === 0) {
+        chrome.tabs.create({ url: setupUrl });
+      } else {
+        // Bring existing setup tab to the front
+        chrome.tabs.update(tabs[0].id!, { active: true });
+      }
+    });
   }
 
   if (request.action === "ANALYZE_TOKEN") {

@@ -1,0 +1,96 @@
+﻿[36mvite v6.4.2 [32mbuilding for production...[36m[39m
+[32mΓ£ô[39m 0 modules transformed.
+node.exe : [31mΓ£ù[39m 
+Build failed in 107ms
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (  
+  [31mΓ£ù[39m Build fa   
+ iled in 107ms:String)    
+ [], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+[31merror during build:
+[31m[vite:build-html] 
+Transform failed with 1 
+error:
+C:/Users/USER/Downloads/Fo
+ur.meme/sentinel-extension
+/src/offscreen/offscreen.t
+s:9:10: ERROR: Expected 
+";" but found 
+"isPermitted"[31m
+file: [36mC:/Users/USER/D
+ownloads/Four.meme/sentine
+l-extension/src/offscreen/
+offscreen.ts:9:10 (C:/User
+s/USER/Downloads/Four.meme
+/sentinel-extension/offscr
+een.html)[31m
+[33m
+[33mExpected ";" but 
+found "isPermitted"[33m
+7  |  const 
+SpeechRecognition = 
+(window as 
+any).SpeechRecognition || 
+(window as any).webkitSpee
+chRecognition;
+8  |  
+9  |    private 
+isPermitted: boolean = 
+true;
+   |            ^
+10 |  
+11 |    constructor() {
+[31m
+    at 
+failureErrorWithLog (C:\Us
+ers\USER\Downloads\Four.me
+me\sentinel-extension\node
+_modules\esbuild\lib\main.
+js:1467:15)
+    at C:\Users\USER\Downl
+oads\Four.meme\sentinel-ex
+tension\node_modules\esbui
+ld\lib\main.js:736:50
+    at responseCallbacks.<
+computed> (C:\Users\USER\D
+ownloads\Four.meme\sentine
+l-extension\node_modules\e
+sbuild\lib\main.js:603:9)
+    at 
+handleIncomingPacket (C:\U
+sers\USER\Downloads\Four.m
+eme\sentinel-extension\nod
+e_modules\esbuild\lib\main
+.js:658:12)
+    at 
+Socket.readFromStdout (C:\
+Users\USER\Downloads\Four.
+meme\sentinel-extension\no
+de_modules\esbuild\lib\mai
+n.js:581:7)
+    at Socket.emit 
+(node:events:508:20)
+    at addChunk (node:inte
+rnal/streams/readable:564:
+12)
+    at readableAddChunkPus
+hByteMode (node:internal/s
+treams/readable:515:3)
+    at Readable.push (node
+:internal/streams/readable
+:395:5)
+    at Pipe.onStreamRead (
+node:internal/stream_base_
+commons:189:23)[39m

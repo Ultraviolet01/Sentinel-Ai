@@ -11,6 +11,7 @@ class SentinelVoiceListener {
   private isAwake: boolean = false;
   private awakeTimeout: number | null = null;
   private readonly AWAKE_DURATION = 5000; // 5 seconds to give a command
+  private isPermitted: boolean = true;
 
   constructor() {
     if (!SpeechRecognition) {
@@ -32,13 +33,16 @@ class SentinelVoiceListener {
     };
 
     this.recognition.onend = () => {
-      // Keep active
-      this.recognition.start();
+      // Keep active ONLY if permitted
+      if (this.isPermitted) {
+        this.recognition.start();
+      }
     };
 
     this.recognition.onerror = (event: any) => {
       console.error("[Sentinel_Offscreen] Recognition error:", event.error);
       if (event.error === 'not-allowed') {
+        this.isPermitted = false;
         chrome.runtime.sendMessage({ action: "MIC_PERMISSION_DENIED" });
       }
     };
