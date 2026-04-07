@@ -23,9 +23,14 @@ async function setupOffscreen() {
 chrome.runtime.onStartup.addListener(setupOffscreen);
 chrome.runtime.onInstalled.addListener(setupOffscreen);
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   if (request.action === "WAKE_WORD_DETECTED") {
     handleVoiceScan();
+  }
+
+  if (request.action === "MIC_PERMISSION_DENIED") {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab?.id) chrome.tabs.sendMessage(tab.id, { action: "SHOW_PERMISSION_ERROR" });
   }
 
   if (request.action === "ANALYZE_TOKEN") {

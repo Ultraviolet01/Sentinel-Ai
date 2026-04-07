@@ -191,6 +191,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ success: true });
   }
 
+  if (request.action === "SHOW_PERMISSION_ERROR") {
+    showPermissionError();
+    sendResponse({ success: true });
+  }
+
   if (request.action === "HIDE_VOICE_HUD") {
     hideSentinelHUD();
     sendResponse({ success: true });
@@ -232,7 +237,7 @@ function showSentinelHUD() {
 
   hud.innerHTML = `
     <span style="display: inline-block; width: 10px; height: 10px; background: #00f8bb; border-radius: 50%; animation: pulse 1s infinite;"></span>
-    SENTINEL LISTENING... [SAY: "HEY SENTINEL"]
+    AWAITING INSTRUCTION: [SAY "SENTINEL"]
     <style>
       @keyframes pulse {
         0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px #00f8bb; }
@@ -245,6 +250,42 @@ function showSentinelHUD() {
 
   // Auto-hide after 10 seconds if no command
   setTimeout(hideSentinelHUD, 10000);
+}
+
+function showPermissionError() {
+  hideSentinelHUD();
+
+  const hud = document.createElement('div');
+  hud.id = 'sentinel-voice-hud';
+  Object.assign(hud.style, {
+    position: 'fixed',
+    top: '20px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    zIndex: '2147483647',
+    padding: '12px 24px',
+    background: 'rgba(255, 77, 77, 0.1)',
+    border: '2px solid #ff4d4d',
+    borderRadius: '8px',
+    color: '#ff4d4d',
+    fontFamily: '"Orbitron", "Inter", sans-serif',
+    fontSize: '12px',
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: '0.2em',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    boxShadow: '0 0 30px rgba(255, 77, 77, 0.2)',
+  });
+
+  hud.innerHTML = `
+    <span>⚠️</span>
+    SENTINEL_ACCESS_DENIED: MIC PERMISSION REQUIRED
+  `;
+
+  document.body.appendChild(hud);
+  setTimeout(hideSentinelHUD, 15000);
 }
 
 function hideSentinelHUD() {

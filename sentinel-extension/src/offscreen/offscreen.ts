@@ -38,6 +38,9 @@ class SentinelVoiceListener {
 
     this.recognition.onerror = (event: any) => {
       console.error("[Sentinel_Offscreen] Recognition error:", event.error);
+      if (event.error === 'not-allowed') {
+        chrome.runtime.sendMessage({ action: "MIC_PERMISSION_DENIED" });
+      }
     };
 
     this.recognition.start();
@@ -45,19 +48,13 @@ class SentinelVoiceListener {
   }
 
   private processTranscript(transcript: string) {
-    // Stage 1: Wake Word Detection
-    if (!this.isAwake && transcript.includes("hey sentinel")) {
-      this.wakeUp();
-      return;
-    }
+    const triggerWords = ["hey sentinel", "sentinel", "scan this", "audit this", "start scan"];
+    const foundTrigger = triggerWords.some(word => transcript.toLowerCase().includes(word));
 
-    // Stage 2: Command Detection
-    if (this.isAwake) {
-      if (transcript.includes("scan") || transcript.includes("token")) {
-        console.log("[Sentinel_Offscreen] Command Detected: SCAN_TOKEN");
-        chrome.runtime.sendMessage({ action: "WAKE_WORD_DETECTED" });
-        this.resetState();
-      }
+    if (foundTrigger) {
+      console.log("[Sentinel_Offscreen] One-Shot Trigger Detected:", transcript);
+      chrome.runtime.sendMessage({ action: "WAKE_WORD_DETECTED" });
+      this.resetState();
     }
   }
 
