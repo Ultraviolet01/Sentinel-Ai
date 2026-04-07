@@ -13,7 +13,7 @@ async function setupOffscreen() {
   if (await chrome.offscreen.hasDocument()) return;
   
   await chrome.offscreen.createDocument({
-    url: 'offscreen.html',
+    url: chrome.runtime.getURL('offscreen.html'),
     reasons: [chrome.offscreen.Reason.AUDIO_PLAYBACK, chrome.offscreen.Reason.USER_MEDIA],
     justification: 'Sentinel AI needs background microphone access for the "Hey Sentinel" wake-word listener.',
   });
