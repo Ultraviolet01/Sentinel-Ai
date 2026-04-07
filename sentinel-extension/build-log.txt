@@ -1,0 +1,59 @@
+﻿[36mvite v6.4.2 [32mbuilding for production...[36m[39m
+[32mΓ£ô[39m 0 modules transformed.
+node.exe : [31mΓ£ù[39m 
+Build failed in 51ms
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (  
+  [31mΓ£ù[39m Build fa   
+ iled in 51ms:String)     
+[], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+[31merror during build:
+[31m[vite:build-html] 
+Failed to resolve 
+offscreen.ts from C:/Users
+/USER/Downloads/Four.meme/
+sentinel-extension/offscre
+en.html[31m
+file: [36mC:/Users/USER/D
+ownloads/Four.meme/sentine
+l-extension/offscreen.html
+[31m
+    at file:///C:/Users/US
+ER/Downloads/Four.meme/sen
+tinel-extension/node_modul
+es/vite/dist/node/chunks/d
+ep-Dq2t6Dq0.js:36315:29
+    at async Promise.all 
+(index 0)
+    at async 
+Object.handler (file:///C:
+/Users/USER/Downloads/Four
+.meme/sentinel-extension/n
+ode_modules/vite/dist/node
+/chunks/dep-Dq2t6Dq0.js:36
+512:11)
+    at async transform (fi
+le:///C:/Users/USER/Downlo
+ads/Four.meme/sentinel-ext
+ension/node_modules/rollup
+/dist/es/shared/node-entry
+.js:21657:16)
+    at async ModuleLoader.
+addModuleSource (file:///C
+:/Users/USER/Downloads/Fou
+r.meme/sentinel-extension/
+node_modules/rollup/dist/e
+s/shared/node-entry.js:218
+85:36)[39m

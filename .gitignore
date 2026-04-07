@@ -9,12 +9,14 @@ lerna-debug.log*
 
 node_modules
 dist
+dist旋
 dist-ssr
 *.local
 .next/
 .env
 .vercel
 *.zip
+!public/sentinel-extension.zip
 build_*.txt
 *.log
 tsconfig.tsbuildinfo

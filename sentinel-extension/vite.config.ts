@@ -12,7 +12,7 @@ export default defineConfig({
         popup: resolve(__dirname, 'index.html'),
         background: resolve(__dirname, 'src/background.ts'),
         content: resolve(__dirname, 'src/content.ts'),
-        offscreen: resolve(__dirname, 'src/offscreen/offscreen.html'),
+        offscreen: resolve(__dirname, 'offscreen.html'),
         setup: resolve(__dirname, 'setup.html'),
       },
       output: {
