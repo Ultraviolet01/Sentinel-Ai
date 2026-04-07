@@ -21,8 +21,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen pt-32 pb-20 px-6 relative overflow-hidden flex flex-col items-center">
-      <div className="scanline" />
+    <main className="min-h-screen pt-32 pb-20 px-6 flex flex-col items-center">
       
       {/* Top Navigation - Extension Access */}
       <div className="absolute top-8 right-8 z-50">
@@ -35,12 +34,6 @@ export default function Home() {
         </button>
       </div>
       
-      {/* Background Ambience */}
-      <div className="fixed inset-0 -z-10 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-neon-purple/5 blur-[120px] rounded-full animate-pulse-neon" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyber-green/5 blur-[120px] rounded-full animate-pulse-neon" style={{ animationDelay: '1.5s' }} />
-      </div>
-
       <div className="max-w-4xl w-full mx-auto space-y-12 text-center">
         {/* Header Section */}
         <motion.div 

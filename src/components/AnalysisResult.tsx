@@ -71,7 +71,6 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result, metadata
     >
       {/* SECTION 1: SNAPSHOT HEADER */}
       <div className="glass-card p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="scanline" />
         <div className="space-y-1">
           <div className="flex items-center gap-3">
              <h2 className="text-3xl font-black font-orbitron tracking-tighter text-white">

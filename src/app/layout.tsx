@@ -20,11 +20,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${orbitron.variable}`}>
-      <body className="antialiased bg-[#020617] text-white font-inter">
-        <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(168,85,247,0.05),_transparent_70%)] pointer-events-none" />
-        <main className="relative min-h-screen">
-          {children}
-        </main>
+      <body className="antialiased">
+        {children}
       </body>
     </html>
   );
