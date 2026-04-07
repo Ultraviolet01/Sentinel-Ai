@@ -39,7 +39,8 @@ export async function POST(request: Request) {
     let audioBase64: string | undefined;
     if (process.env.ELEVENLABS_API_KEY) {
       console.log(`[Sentinel_Audit] Step 4: Syncing ElevenLabs Audio...`);
-      audioBase64 = await generateSpokenVerdict(result.summary).catch(e => {
+      const spokenText = `Sentinel Audit Complete. Verdict is ${result.finalVerdict}. Risk Score: ${result.scores?.risk || 0} percent. ${result.summary}`;
+      audioBase64 = await generateSpokenVerdict(spokenText).catch(e => {
         console.warn("[Sentinel_Audit] Audio sync throttled or failed.");
         return undefined;
       });

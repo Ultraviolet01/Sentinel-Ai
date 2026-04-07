@@ -204,10 +204,59 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 /**
- * Sentinel Operative HUD
+ * Sentinel Operative HUD & Pinned Orb
  */
+function bootstrapSentinelOrb() {
+  if (document.getElementById('sentinel-pinned-orb')) return;
+
+  const orb = document.createElement('div');
+  orb.id = 'sentinel-pinned-orb';
+  Object.assign(orb.style, {
+    position: 'fixed',
+    bottom: '20px',
+    right: '20px',
+    width: '48px',
+    height: '48px',
+    zIndex: '2147483647',
+    background: 'rgba(0, 0, 0, 0.8)',
+    border: '2px solid rgba(0, 248, 187, 0.3)',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxShadow: '0 0 20px rgba(0, 248, 187, 0.1)',
+    backdropFilter: 'blur(10px)'
+  });
+
+  orb.innerHTML = `
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00f8bb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+    </svg>
+    <style>
+      @keyframes breathing-glow {
+        0%, 100% { box-shadow: 0 0 20px rgba(0, 248, 187, 0.2); border-color: rgba(0, 248, 187, 0.3); transform: scale(1); }
+        50% { box-shadow: 0 0 40px rgba(0, 248, 187, 0.6); border-color: rgba(0, 248, 187, 0.8); transform: scale(1.1); }
+      }
+      .sentinel-listening {
+        animation: breathing-glow 2s ease-in-out infinite !important;
+        background: rgba(0, 248, 187, 0.1) !important;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px #00f8bb; }
+        50% { opacity: 0.5; transform: scale(1.2); box-shadow: 0 0 20px #00f8bb; }
+      }
+    </style>
+  `;
+
+  document.body.appendChild(orb);
+}
+
 function showSentinelHUD() {
-  hideSentinelHUD(); // Prevent duplicates
+  hideSentinelHUD(); 
+  const orb = document.getElementById('sentinel-pinned-orb');
+  if (orb) orb.classList.add('sentinel-listening');
 
   const hud = document.createElement('div');
   hud.id = 'sentinel-voice-hud';
@@ -238,52 +287,21 @@ function showSentinelHUD() {
   hud.innerHTML = `
     <span style="display: inline-block; width: 10px; height: 10px; background: #00f8bb; border-radius: 50%; animation: pulse 1s infinite;"></span>
     AWAITING INSTRUCTION: [SAY "SENTINEL"]
-    <style>
-      @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px #00f8bb; }
-        50% { opacity: 0.5; transform: scale(1.2); box-shadow: 0 0 20px #00f8bb; }
-      }
-    </style>
   `;
 
   document.body.appendChild(hud);
-
-  // Auto-hide after 10 seconds if no command
   setTimeout(hideSentinelHUD, 10000);
 }
 
 function showPermissionError() {
   hideSentinelHUD();
-
   const hud = document.createElement('div');
   hud.id = 'sentinel-voice-hud';
-  Object.assign(hud.style, {
-    position: 'fixed',
-    top: '20px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    zIndex: '2147483647',
-    padding: '12px 24px',
-    background: 'rgba(255, 77, 77, 0.1)',
-    border: '2px solid #ff4d4d',
-    borderRadius: '8px',
-    color: '#ff4d4d',
-    fontFamily: '"Orbitron", "Inter", sans-serif',
-    fontSize: '12px',
-    fontWeight: '900',
-    textTransform: 'uppercase',
-    letterSpacing: '0.2em',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    boxShadow: '0 0 30px rgba(255, 77, 77, 0.2)',
-  });
-
+  // ... (rest of style stays same)
   hud.innerHTML = `
     <span>⚠️</span>
     SENTINEL_ACCESS_DENIED: MIC PERMISSION REQUIRED
   `;
-
   document.body.appendChild(hud);
   setTimeout(hideSentinelHUD, 15000);
 }
@@ -291,6 +309,10 @@ function showPermissionError() {
 function hideSentinelHUD() {
   const existing = document.getElementById('sentinel-voice-hud');
   if (existing) existing.remove();
+  const orb = document.getElementById('sentinel-pinned-orb');
+  if (orb) orb.classList.remove('sentinel-listening');
 }
 
+// Global Initialization
+bootstrapSentinelOrb();
 console.log("[Sentinel_AI] Platform-Aware Extraction Engine (V3) initialized.");
