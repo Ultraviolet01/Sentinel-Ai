@@ -290,7 +290,7 @@ function showSentinelHUD(status: string = "WAITING") {
   if (orb) {
     orb.className = ''; // Reset classes
     if (status === "LISTENING") orb.classList.add('sentinel-listening-mode');
-    else if (status === "SPEAKING") orb.classList.add('sentinel-speaking-mode');
+    else if (status === "SPEAKING" || status === "GREETING") orb.classList.add('sentinel-speaking-mode');
     else if (status === "ANALYZING") orb.classList.add('sentinel-processing');
   }
 
@@ -324,6 +324,10 @@ function showSentinelHUD(status: string = "WAITING") {
   let duration = 5000;
 
   switch(status) {
+    case 'GREETING':
+      content = `<span style="animation: hud-pulse 1s infinite;">🎙️</span> INITIALIZING SENTINEL...`;
+      duration = 0; 
+      break;
     case 'LISTENING':
       hud.style.borderColor = "#00e0ff";
       hud.style.color = "#00e0ff";

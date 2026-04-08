@@ -86,8 +86,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.action === "TRIGGER_COMMAND_LISTENING") {
-    console.log("[Sentinel_AI] Manual trigger received. Initializing Offscreen Listener.");
-    chrome.runtime.sendMessage({ action: "START_TRIGGERED_LISTENING" });
+    console.log("[Sentinel_AI] Manual trigger received. Initializing Greet & Listen.");
+    chrome.runtime.sendMessage({ action: "GREET_AND_LISTEN" });
   }
 
   if (request.action === "UPDATE_HUD_PHASE") {
