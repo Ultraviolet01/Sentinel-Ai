@@ -170,6 +170,10 @@ chrome.runtime.onMessage.addListener((request) => {
     listener.stopListening();
   }
 
+  if (request.action === "SPEAK_TEXT" && request.text) {
+    listener.speakText(request.text);
+  }
+
   if (request.action === "PLAY_VOICE_RESULT" && request.audioBase64) {
     console.log("[Sentinel_Offscreen] Delivering oral audit results...");
     const src = request.audioBase64.startsWith('data:audio') ? request.audioBase64 : `data:audio/mpeg;base64,${request.audioBase64}`;

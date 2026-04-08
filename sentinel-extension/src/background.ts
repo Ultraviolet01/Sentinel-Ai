@@ -38,20 +38,42 @@ async function safeMessageToTab(tabId: number, message: any) {
   }
 }
 
-async function handleVoiceScan(transcript?: string) {
-  console.log("[Sentinel_AI] Executing Voice Command Protocol. Context:", transcript || "None");
+async function handleVoiceScan(transcript?: string, isAutoScan: boolean = false) {
+  console.log("[Sentinel_AI] Executing Scan Protocol. Auto:", isAutoScan, "Context:", transcript || "None");
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) return;
 
-  // Show "HEARING" state in HUD via content script
-  await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD", status: "HEARING" });
+  // Initial HUD Feedback
+  await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD", status: isAutoScan ? "GREETING" : "HEARING" });
 
   try {
-    // Trigger extraction in the content script
+    // 1. Extract Token Information
     const extraction = await safeMessageToTab(tab.id, { action: "EXTRACT_TOKEN" });
     
-    if (!extraction || extraction.confidence < 0.3) {
-      console.warn("[Sentinel_AI] Extraction failed or low confidence. Aborting voice scan.");
+    if (!extraction) {
+      console.warn("[Sentinel_AI] Extraction failed. Aborting scan.");
+      await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD", status: "ERROR" });
+      return;
+    }
+
+    // 2. Handle Native Portal Verdicts (No API call needed)
+    if (extraction.localVerdict) {
+      console.log("[Sentinel_AI] Native verdict detected. Delivering instantly.");
+      const { score, verdict, summary } = extraction.localVerdict;
+      const speechText = `Analysis retrieved. Score: ${score} out of 100. Verdict: ${verdict}. ${summary}`;
+      
+      chrome.runtime.sendMessage({ 
+        action: "SPEAK_TEXT", 
+        text: speechText 
+      });
+      
+      await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD", status: "SUCCESS" });
+      return;
+    }
+
+    // 3. Regular API Path (for DexScreener/Four.Meme/etc)
+    if (extraction.confidence < 0.3) {
+      console.warn("[Sentinel_AI] Low confidence extraction. Aborting scan.");
       await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD", status: "NOT_FOUND" });
       return;
     }
@@ -60,7 +82,7 @@ async function handleVoiceScan(transcript?: string) {
     await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD", status: "ANALYZING" });
 
     // Perform full analysis
-    performAnalysis(extraction, "voice", (res: any) => {
+    performAnalysis(extraction, isAutoScan ? "auto_orb" : "voice", (res: any) => {
       if (res.success && res.data.audioBase64) {
         // Send to offscreen for playback
         chrome.runtime.sendMessage({ 
@@ -75,7 +97,7 @@ async function handleVoiceScan(transcript?: string) {
       }
     });
   } catch (error) {
-    console.error("[Sentinel_AI] Voice Scan Error:", error);
+    console.error("[Sentinel_AI] Scan Error:", error);
     await safeMessageToTab(tab.id, { action: "SHOW_VOICE_HUD", status: "ERROR" });
   }
 }
@@ -88,6 +110,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "TRIGGER_COMMAND_LISTENING") {
     console.log("[Sentinel_AI] Manual trigger received. Initializing Greet & Listen.");
     chrome.runtime.sendMessage({ action: "GREET_AND_LISTEN" });
+  }
+
+  if (request.action === "TRIGGER_AUTO_SCAN") {
+    console.log("[Sentinel_AI] Auto-scan trigger received.");
+    handleVoiceScan(undefined, true);
   }
 
   if (request.action === "UPDATE_HUD_PHASE") {

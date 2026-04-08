@@ -4,7 +4,7 @@
  */
 
 interface ExtractionResult {
-  sourcePlatform: "fourmeme" | "dexscreener" | "twitter" | "telegram" | "generic";
+  sourcePlatform: "fourmeme" | "dexscreener" | "twitter" | "telegram" | "generic" | "sentinel";
   pageUrl: string;
   pageTitle: string;
   contractAddress?: string;
@@ -15,6 +15,11 @@ interface ExtractionResult {
   extractedText: string[];
   confidence: number;
   detectionReason: string;
+  localVerdict?: {
+    score: number;
+    verdict: string;
+    summary: string;
+  };
 }
 
 /**
@@ -40,6 +45,40 @@ abstract class BaseParser {
       if (text.length > 10) blocks.push(text.substring(0, 200));
     }
     return blocks;
+  }
+}
+
+/**
+ * Sentinel AI Native Parser
+ */
+class SentinelParser extends BaseParser {
+  extract(): Partial<ExtractionResult> {
+    const caFromUrl = this.findCA(this.url);
+    
+    // Extract verdict from Meta tags (Reliable)
+    const ogDescription = (this.doc.querySelector('meta[property="og:description"]') as HTMLMetaElement)?.content || "";
+    const verdictMatch = ogDescription.match(/🎯 VERDICT: (.*?) \|/);
+    const verdict = verdictMatch ? verdictMatch[1].trim() : undefined;
+
+    // Extract score from Title
+    const scoreMatch = this.doc.title.match(/Scorecard: (\d+)\/100/);
+    const score = scoreMatch ? parseInt(scoreMatch[1]) : undefined;
+
+    // Extract summary from DOM (First italic paragraph usually)
+    const summaryEl = this.doc.querySelector('p.italic, blockquote');
+    const summary = summaryEl?.textContent?.replace(/^"|"$/g, '').trim();
+
+    return {
+      sourcePlatform: 'sentinel',
+      contractAddress: caFromUrl,
+      confidence: 1.0,
+      detectionReason: "Native Sentinel Verdict Detected",
+      localVerdict: verdict && score ? {
+        score,
+        verdict,
+        summary: summary || "Verdict successfully parsed from Sentinel portal."
+      } : undefined
+    };
   }
 }
 
@@ -153,7 +192,8 @@ function performFullExtraction(): ExtractionResult {
   const url = window.location.href;
   let parser: BaseParser;
 
-  if (url.includes('four.meme')) parser = new FourMemeParser();
+  if (url.includes('sentinel-ai-ruddy.vercel.app')) parser = new SentinelParser();
+  else if (url.includes('four.meme')) parser = new FourMemeParser();
   else if (url.includes('dexscreener.com')) parser = new DexScreenerParser();
   else if (url.includes('x.com') || url.includes('twitter.com')) parser = new XTwitterParser();
   else if (url.includes('web.telegram.org')) parser = new TelegramParser();
@@ -173,7 +213,8 @@ function performFullExtraction(): ExtractionResult {
     tokenTicker: platformData.tokenTicker,
     extractedText: platformData.extractedText || commonText,
     confidence: platformData.confidence || 0,
-    detectionReason: platformData.detectionReason || "Contextual analysis"
+    detectionReason: platformData.detectionReason || "Contextual analysis",
+    localVerdict: platformData.localVerdict
   };
 }
 
@@ -275,9 +316,8 @@ function bootstrapSentinelOrb() {
   `;
 
   orb.onclick = () => {
-     console.log("[Sentinel_AI] Manual trigger requested via Orb click.");
-     chrome.runtime.sendMessage({ action: "TRIGGER_COMMAND_LISTENING" });
-     showSentinelHUD("LISTENING");
+     console.log("[Sentinel_AI] Automatic scan requested via Orb click.");
+     chrome.runtime.sendMessage({ action: "TRIGGER_AUTO_SCAN" });
   };
 
   document.body.appendChild(orb);
